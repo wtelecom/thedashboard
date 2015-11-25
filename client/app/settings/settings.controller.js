@@ -2,11 +2,11 @@
 
 angular.module('thedashboardApp')
   .controller('SettingsDashboardCtrl', function ($scope) {
-    
+
   })
   .controller('SettingsTabController', function ($scope, $cacheFactory, Plugin, $http, $injector, queryService, Settings) {
     $scope.plugins = {};
-
+    $scope.config = {};
     // Initializing plugins tab
     initTabPlugins();
 
@@ -20,7 +20,11 @@ angular.module('thedashboardApp')
         $scope.plugins.eventors = Plugin.getEventorPlugins();
         $scope.plugins.eventorActive = Plugin.getEventor();
         $scope.plugins.acquisitorSetup = Plugin.getAcquisitorSetup();
-        $scope.plugins.acquisitorConfig = Plugin.getAcquisitorConfig();
+        $scope.config.realtime_delay   = Plugin.getAcquisitorConfig().realtime_delay;
+        $scope.config.listen_ratio    = String(Plugin.getAcquisitorConfig().listen_ratio);
+        $scope.config.data_delay_from = String(Plugin.getAcquisitorConfig().data_delay_from);
+        $scope.config.data_delay_to   = String(Plugin.getAcquisitorConfig().data_delay_to);
+        //$scope.plugins.acquisitorConfig = Plugin.getAcquisitorConfig();
         $scope.visualizatorService = $injector.get($scope.plugins.visualizatorActive + "Visualizator");
       });
     }
@@ -56,7 +60,7 @@ angular.module('thedashboardApp')
       'getData',
       {}
     );
-    
+
     dashboardsPromise.then(function(dashboards) {
       $scope.dashboards = dashboards;
     });
@@ -160,7 +164,7 @@ angular.module('thedashboardApp')
     $scope.getIcon = function(visualization) {
       return $scope.visualizatorService.getIcon(visualization.json.chartType);
     }
-    
+
   })
   .controller('SettingsTabDataSourcesController', function ($scope, queryService, socket, $injector, $cacheFactory, Plugin, Settings) {
     getPlugins();
@@ -173,7 +177,7 @@ angular.module('thedashboardApp')
         $scope.acquisitorService = $injector.get(Plugin.getAcquisitor() + "Acquisitor");
         // Getting the datasources
         getDatasources(Plugin.getAcquisitor());
-      }); 
+      });
     }
 
     function getDatasources(acquisitor) {

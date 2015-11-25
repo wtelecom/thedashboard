@@ -45,7 +45,6 @@
                                       select.form-control.m-b( ng-model="config.realtime_delay", ng-change="acquisitorSetConfig('realtime_delay', config.realtime_delay)")
                                         option( 
                                           ng-repeat="realtime_delay in plugins.acquisitorSetup.realtime_delay track by $index" 
-                                          ng-selected="{{ realtime_delay == plugins.acquisitorConfig.realtime_delay }}" 
                                           value="{{ realtime_delay }}") {{ realtime_delay }}
                               //- Listen ratio
                               div
@@ -58,7 +57,6 @@
                                         ng-change="acquisitorSetConfig('listen_ratio', config.listen_ratio)")                          
                                         option(
                                           ng-repeat="listen_ratio in plugins.acquisitorSetup.listen_ratio track by $index"
-                                          ng-selected="{{listen_ratio == plugins.acquisitorConfig.listen_ratio }}"
                                           value="{{listen_ratio}}") {{listen_ratio}}
                               //- Data delay
                               div
@@ -71,7 +69,6 @@
                                         ng-change="acquisitorSetConfig('data_delay_from', config.data_delay_from)")
                                         option(
                                           ng-repeat="data_delay_from in plugins.acquisitorSetup.data_delay_from track by $index"
-                                          ng-selected="{{ data_delay_from == plugins.acquisitorConfig.data_delay_from }}"
                                           value="{{data_delay_from}}") {{data_delay_from}}
                                   div.row
                                     .col-xs-12
@@ -81,7 +78,6 @@
                                         ng-change="acquisitorSetConfig('data_delay_to', config.data_delay_to)")
                                         option(
                                           ng-repeat="data_delay_to in plugins.acquisitorSetup.data_delay_to track by $index"
-                                          ng-selected="{{data_delay_to == plugins.acquisitorConfig.data_delay_to }}"
                                           value="{{data_delay_to}}") {{data_delay_to}}
                   .hpanel.horange
                     .panel-heading
@@ -275,6 +271,3 @@
                         span.text-danger.font-bold Lorem ipsum
                       |                                     
                       td Jul 02, 2015
-
-
-
