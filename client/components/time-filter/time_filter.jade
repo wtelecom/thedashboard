@@ -4,10 +4,10 @@
       .col-md-2
         ul.nav.nav-pills.nav-stacked
           li(ng-class="{active: mode === 'quick' }")
-            a(ng-click="setMode('quick')") quick
+            a(ng-click="setMode('quick')") Real time
           |                         
           li(ng-class="{active: mode === 'absolute' }")
-            a(ng-click="setMode('absolute')") absolute
+            a(ng-click="setMode('absolute')") Historical
       |         
       .col-md-10
         .container-fluid(ng-switch='mode')
