@@ -29,4 +29,10 @@ router.delete('/dashboards/:id', auth.hasRole('admin'), controller.destroyDashbo
 router.get('/datasource', controller.datasource);
 router.post('/datasource', controller.datasource);
 
+// Reports routes
+router.get('/reports', auth.isAuthenticated(), controller.getReports);
+//router.post('/reports', controller.createDashboard);
+//router.delete('/reports/:id', auth.hasRole('admin'), controller.destroyReport);
+
+
 module.exports = router;
