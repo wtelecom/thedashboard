@@ -16,8 +16,8 @@
                   td(width="30%") From: {{ report.time.from }} <br/> To: {{ report.time.from }}
                   td
                     .progress
-                      .progress-bar.progress-bar-info(role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;")
-                        | 60%
+                      .progress-bar.progress-bar-info(role="progressbar" aria-valuenow="{{report.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{ report.progress }}%;")
+                        {{ report.progress }} %
                   td.min(width="1%")
                     a.btn.btn-default.btn-xs(ng-click='showReport(report)')
                       i.glyphicon.glyphicon-eye-open

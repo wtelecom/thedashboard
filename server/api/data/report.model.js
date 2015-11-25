@@ -9,7 +9,8 @@ var ReportSchema = new Schema({
   acquisitorPlugin: String,
   visualizations: [{ type: Schema.Types.ObjectId, ref: 'Visualization'}],
   matrix: [],
-  time: Schema.Types.Mixed
+  time: Schema.Types.Mixed,
+  progress: Number
 });
 
 module.exports = mongoose.model('Report', ReportSchema);
