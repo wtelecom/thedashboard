@@ -1,0 +1,78 @@
+div.modal.fade.in
+  div.modal-dialog
+    script(type="text/ng-template", id="ModalVisualizationOpenContent")
+      div.modal-content
+        div.color-line
+      div.modal-header.text-center
+        h3.modal-title Add visualization
+      div.modal-body
+        div.row
+          div.col-xs-12
+            table.table.table-hover.visualizations
+              thead
+              tbody
+                tr(ng-repeat='visualization in visualizations')
+                  td
+                    i(ng-class="getIcon(visualization)")
+                    | &nbsp;
+                    | {{ visualization.name }}
+                  td(width="1%")
+                    a.btn.btn-default.btn-xs(ng-click="addVisualization(visualization)")
+                      i.fa.fa-plus
+      div.modal-footer
+        button(type="button", class="btn btn-default btn-outline", data-dismiss="modal", ng-click="cancel()") Close
+    script(type="text/ng-template" id="ModalDashboardSaveContent")
+      div.modal-content
+        div.color-line
+      div.modal-header.text-center
+        h3.modal-title Save dashboard
+      div.modal-body
+        div.row
+          div.col-xs-12
+            .form-group
+              label.control-label Dashboard name
+              input.form-control(type="text", ng-model="dashboardName")
+      div.modal-footer
+        button(type="button", class="btn btn-default btn-outline", data-dismiss="modal", ng-click="cancel()") Close
+        button(type="button", class="btn btn-info btn-outline", data-dismiss="modal", ng-click="save()")
+          i.fa.fa-floppy-o
+          | &nbsp; Save 
+
+
+.col-xs-12.col-md-offset-4.col-md-4
+  .text-center
+    h2.m-b-xs Create a new report
+      .m
+        i.fa.fa-desktop.fa-2x
+    p
+      | To add a visualization, click in the bottom button
+
+.row
+  nav(mfb-menu, position="br", effect="slidein", active-icon="ion-navicon-round", resting-icon="ion-navicon-round", toggling-method="click")
+    button(mfb-button, icon="ion-record", label="Save", ng-click="openVisualizationSaveModal()")
+    button(mfb-button, icon="ion-plus", label="Add visualization", ng-click="openVisualizationModal()")
+  
+  //- .col-xs-12.col-md-offset-4.col-md-4(ng-if="items.length < 1")
+  //-   .text-center
+  //- 
+  //-     h2.m-b-xs Create a new report
+  //-       .m
+  //-         i.fa.fa-desktop.fa-2x
+  //-     p
+  //-       | To add a visualization, click in the bottom button
+
+  .col-xs-12
+    div(gridster="gridsterOpts")
+      ul
+        li(gridster-item="item", ng-repeat="item in items", id="_{{ item.id }}")
+          .hpanel
+            .panel-heading.hbuilt
+              .panel-tools
+                a.showhide
+                  i.fa.fa-chevron-up
+                |                     
+                a.closebox
+                  i.fa.fa-times
+              | {{ item.name }}
+            .panel-body
+              div(id="vis-{{ item.id }}")

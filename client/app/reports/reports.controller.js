@@ -3,12 +3,11 @@
 angular.module('thedashboardApp')
 .controller('ReportsCtrl', function ($scope) {
 })
-.controller('ReportsNewCtrl', function ($scope, $rootScope) {
+.controller('ReportsCreateCtrl', function ($scope, $rootScope, $modal) {
   $rootScope.sectionName = "Reports";
   $rootScope.sectionDescription = "Create a new Report";
-
 })
-.controller('ReportsOpenCtrl', function ($scope, $rootScope, Settings) {
+.controller('ReportsOpenCtrl', function ($scope, $rootScope, Settings, $location) {
   $rootScope.sectionName = "Reports";
   $rootScope.sectionDescription = "Open a report";
 
@@ -17,4 +16,7 @@ angular.module('thedashboardApp')
     $scope.reports = reports;
   });
 
+  $scope.routeTo = function ( path ) {
+    $location.path( path );
+  };
 })
