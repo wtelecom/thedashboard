@@ -3,14 +3,15 @@ form(ng-submit="selectAbsoluteDates()")
     div(style="display:inline-block; min-height:290px;")
       label From:
       input(type="text", class="form-control", ng-model="absoluteDate.from", max-date="absoluteDate.to", input-datetime="{{format}}")
-      datepicker(ng-model="absoluteDate.from", max-date="absoluteDate.to", show-weeks="false", class="time-filter-datepicker")
+      datepicker(ng-model="absoluteDate.from", min-date="absoluteDate.from" max-date="absoluteDate.to", show-weeks="false", class="time-filter-datepicker")
   div.timepicker-section
     div(style="display:inline-block; min-height:290px;")
       Label To:
         &nbsp;
         a.label.label-default.small(ng-click="setToNow()") Set to now
       input(type="text", class="form-control", ng-model="absoluteDate.to", min-date="absoluteDate.from", input-datetime="{{format}}")
-      datepicker(ng-model="absoluteDate.to", min-date="absoluteDate.from", show-weeks="false", class="time-filter-datepicker")
+      datepicker(ng-model="absoluteDate.to", min-date="absoluteDate.from", max-date="absoluteDate.to" show-weeks="false", class="time-filter-datepicker")
+      {{ maxAbsoluteSelectable }}
   div.timepicker-section
     label &nbsp;
     br
