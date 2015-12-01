@@ -128,14 +128,18 @@ angular.module('thedashboardApp')
           {
             redis: {
               name: visualization.name,
-              time: {
-                from: null,
-                to: null
-              },
               id: visualization._id
             },
             mongo: {
               data: visualization.json
+            },
+            time: {
+              from: TimeFilter.from(),
+              to: TimeFilter.to()
+            },
+            config: {
+              from: 1,
+              to: 1
             }
           },
           function(data) {
@@ -219,7 +223,7 @@ angular.module('thedashboardApp')
       var settingsPromise = Settings.broker('dashboards', 'getData', {});
       settingsPromise.then(function(dashboards) {
         $scope.dashboards = dashboards;
-      });  
+      });
     }
   })
   .controller('DashboardCreateCtrl', function ($scope, $rootScope, $modal) {

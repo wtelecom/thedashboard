@@ -5,23 +5,26 @@ angular.module('thedashboardApp')
   	TimeFilter.registerObserver('quick', updateQuick);
     TimeFilter.registerObserver('absolute', updateAbsolute);
 
-
     // if($state.includes("main.reports")) {
-    //   var humanFormat = 'MMMM Do YYYY, hh:mm:ss';
-    //   console.log(TimeFilter.from());
-    //   $scope.timeFilterText = moment(TimeFilter.from()).format(humanFormat) + ' to ' + moment(TimeFilter.to()).format(humanFormat);
-    // } else {
-    //   $scope.timeFilterText = $scope.quick.name;
+    //   var humanFormat = 'MMMM Do YYYY, hh:mm:ss'
+    //   //console.log(TimeFilter.from());
+    //   //$scope.timeFilterText = moment(TimeFilter.from()).format(humanFormat) + ' to ' + moment(TimeFilter.to()).format(humanFormat);
     // }
 
-    $scope.$on('$locationChangeStart', function(event) {
-      if($state.includes("main.reports")) {
-        var humanFormat = 'MMMM Do YYYY, hh:mm:ss';
-        $scope.timeFilterText = moment(TimeFilter.from()).format(humanFormat) + ' to ' + moment(TimeFilter.to()).format(humanFormat);
-      } else {
-        $scope.timeFilterText = $scope.quick.name;
-      }
-    });
+    // if($state.includes("main.reports")) {
+    //   $scope.mode = 'absolute';
+    // } else {
+    //   $scope.mode = 'quick';
+    // }
+    //
+    // $scope.$on('$locationChangeStart', function(event) {
+    //   if($state.includes("main.reports")) {
+    //     var humanFormat = 'MMMM Do YYYY, hh:mm:ss';
+    //     $scope.timeFilterText = moment(TimeFilter.from()).format(humanFormat) + ' to ' + moment(TimeFilter.to()).format(humanFormat);
+    //   } else {
+    //     $scope.timeFilterText = $scope.quick.name;
+    //   }
+    // });
 
     function updateQuick() {
       $scope.quick = TimeFilter.quick;

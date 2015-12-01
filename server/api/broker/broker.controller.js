@@ -34,7 +34,7 @@ exports.task = function(req, res) {
 };
 
 
-// Returns task results 
+// Returns task results
 exports.taskResult = function(req, res) {
   var tasker = req.app.get('tasker');
   var persistor = req.app.get('persistor');
@@ -53,7 +53,7 @@ exports.taskResult = function(req, res) {
 };
 
 
-// Get or set time preferences 
+// Get or set time preferences
 exports.time = function(req, res) {
   var persistor = req.app.get('persistor');
 

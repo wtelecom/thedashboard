@@ -85,8 +85,8 @@ exports.visualization = function(req, res) {
         name: req.body.data.name,
         id: data._id,
         time: {
-          to: null,
-          from: null
+          to: req.body.data.json.time.to,
+          from: req.body.data.json.time.from
         },
         query: req.body.data.query
       }
@@ -304,5 +304,15 @@ exports.getReports = function(req, res) {
     }
   } else {
     return res.json(401);
+  }
+};
+
+exports.createReport = function(req, res) {
+  if (req.method == 'POST') {
+    // TODO: Check if request is correct
+    ReportModel.create(req.body.data, function(err, data) {
+      if(err) { return handleError(res, err); }
+      return res.json(201, {response: "ok", data: data});
+    });
   }
 };

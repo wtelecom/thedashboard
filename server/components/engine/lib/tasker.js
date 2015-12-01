@@ -11,7 +11,7 @@ module.exports = Tasker;
 
 function Tasker() {
   this.queue = kue.createQueue();
-  
+
   this.createTask = function(data, broker, fn) {
     var job = this.queue.create(data.type, {title:'Task job'}).removeOnComplete(true);
     job.data.data = data;

@@ -46,7 +46,3 @@ QueryReq.prototype.execQuery = function(data) {
 
   return deferred.promise;
 }
-
-
-
-

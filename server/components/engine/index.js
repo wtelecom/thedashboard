@@ -7,7 +7,7 @@ var _ = require('lodash'),
   visualizationQuery = require('./lib/queries/visualization'),
   settingQuery = require('./lib/queries/setting'),
   checkQuery = require('./lib/queries/check');
- 
+
 
 module.exports = Engine;
 
@@ -30,6 +30,7 @@ Engine.prototype.select = function(type, subtype, data, task, cb) {
       settingQuery(this, data, task, cb);
       break;
     case 'check':
+      // console.log(data);
       checkQuery(this, data, task, cb);
       break;
   }

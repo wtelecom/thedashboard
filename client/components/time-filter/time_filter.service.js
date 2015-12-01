@@ -7,7 +7,7 @@ angular.module('thedashboardApp')
       return new Date(now - minutes * 60000);
     }
     return {
-      
+
       observerCallbacks: {},
       registerObserver: function(name, callback) {
         if (!this.observerCallbacks[name]) {
@@ -26,6 +26,7 @@ angular.module('thedashboardApp')
         this.notifyObservers(name);
       },
       setAbsolute: function(dates) {
+        console.log(dates);
         this.mode = 'absolute';
         this.absoluteDates = dates;
         this.notifyObservers('absolute');

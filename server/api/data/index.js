@@ -31,7 +31,7 @@ router.post('/datasource', controller.datasource);
 
 // Reports routes
 router.get('/reports', auth.isAuthenticated(), controller.getReports);
-//router.post('/reports', controller.createDashboard);
+router.post('/reports', controller.createReport);
 //router.delete('/reports/:id', auth.hasRole('admin'), controller.destroyReport);
 
 
