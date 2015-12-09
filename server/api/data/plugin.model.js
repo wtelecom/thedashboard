@@ -10,10 +10,10 @@ var PluginSchema = new Schema({
   pluginTitle: String, 
   enable: Boolean,
   config: { 
-    realtime_delay: String,
-    listen_ratio: String,
-    data_delay_from: String,
-    data_delay_to: String
+    realtime_delay: Number,
+    listen_ratio: Number,
+    data_delay_from: Number,
+    data_delay_to: Number
   }
   //Schema.Types.Mixed
 });
@@ -77,7 +77,7 @@ PluginSchema.statics.checkAndUpdate = function(plugins, cb) {
         var toSave = [];
         _.forEach(idsB, function(plugin, index) {
           if (idsA.indexOf(plugin) === -1) {
-            toSave.push(pluginsdata[index]);    
+            toSave.push(plugins[index]);    
           }
         });
         if (toSave.length) {
@@ -100,18 +100,18 @@ PluginSchema.statics.checkAndUpdate = function(plugins, cb) {
 
 PluginSchema.statics.updatePluginConfig = function(name, value, cb) {
   this
-    .find({pluginName: name})
-    .exec(function(err, plugins) {
+    .findOne({pluginName: name})
+    .exec(function(err, plugin) {
       if (err) { return cb(err); }
 
-      var configuration = plugins[0].config;
+      var configuration = plugin.config;
       for (var attr in value) { configuration[attr] = value[attr];}
-      plugins[0].config = configuration;
-      plugins[0].save(function(err,d) {
+      plugin.config = configuration;
+      plugin.save(function(err,d) {
         if(err) console.log(err);
       });
 
-      cb();
+      cb(null, configuration);
     });
 };
 
