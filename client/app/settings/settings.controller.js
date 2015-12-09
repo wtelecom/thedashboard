@@ -2,11 +2,11 @@
 
 angular.module('thedashboardApp')
   .controller('SettingsDashboardCtrl', function ($scope) {
-    
+
   })
   .controller('SettingsTabController', function ($scope, $cacheFactory, Plugin, $http, $injector, queryService, Settings) {
     $scope.plugins = {};
-
+    $scope.config = {};
     // Initializing plugins tab
     initTabPlugins();
 
@@ -19,6 +19,12 @@ angular.module('thedashboardApp')
         $scope.plugins.visualizatorActive = Plugin.getVisualizator();
         $scope.plugins.eventors = Plugin.getEventorPlugins();
         $scope.plugins.eventorActive = Plugin.getEventor();
+        $scope.plugins.acquisitorSetup = Plugin.getAcquisitorSetup();
+        $scope.config.realtime_delay   = Plugin.getAcquisitorConfig().realtime_delay;
+        $scope.config.listen_ratio    = String(Plugin.getAcquisitorConfig().listen_ratio);
+        $scope.config.data_delay_from = String(Plugin.getAcquisitorConfig().data_delay_from);
+        $scope.config.data_delay_to   = String(Plugin.getAcquisitorConfig().data_delay_to);
+        //$scope.plugins.acquisitorConfig = Plugin.getAcquisitorConfig();
         $scope.visualizatorService = $injector.get($scope.plugins.visualizatorActive + "Visualizator");
       });
     }
@@ -26,10 +32,17 @@ angular.module('thedashboardApp')
     $scope.acquisitorSelectChange = function() {
       var name = $scope.plugins.acquisitorActive;
       Plugin.setPluginEnable('acquisitor', name, function(data) {
+        initTabPlugins();
       });
     };
 
-    $scope.visulizatorSelectChange = function() {
+    $scope.acquisitorSetConfig = function(field, value) {
+      var name = $scope.plugins.acquisitorActive;
+      Plugin.setPluginConfig(name, field, value, function(data){
+      });
+    }
+
+    $scope.visualizatorSelectChange = function() {
       var name = $scope.plugins.visualizatorActive;
       Plugin.setPluginEnable('visualizator', name, function(data) {
       });
@@ -47,7 +60,7 @@ angular.module('thedashboardApp')
       'getData',
       {}
     );
-    
+
     dashboardsPromise.then(function(dashboards) {
       $scope.dashboards = dashboards;
     });
@@ -152,7 +165,6 @@ angular.module('thedashboardApp')
       return $scope.visualizatorService.getIcon(visualization.json.chartType);
     }
 
-    
   })
   .controller('SettingsTabDataSourcesController', function ($scope, queryService, socket, $injector, $cacheFactory, Plugin, Settings) {
     getPlugins();
@@ -165,7 +177,7 @@ angular.module('thedashboardApp')
         $scope.acquisitorService = $injector.get(Plugin.getAcquisitor() + "Acquisitor");
         // Getting the datasources
         getDatasources(Plugin.getAcquisitor());
-      }); 
+      });
     }
 
     function getDatasources(acquisitor) {
@@ -195,7 +207,7 @@ angular.module('thedashboardApp')
                       action: "updateDatasources",
                       data: taskData.data
                     });
-                    console.log(dataSources);
+                    //console.log(dataSources);
                     // If exists datasources, we get all fields
                     if (dataSources.length > 0) {
                       queryService.createTask(

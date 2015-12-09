@@ -8,7 +8,14 @@ var PluginSchema = new Schema({
   name: String, 
   pluginName: { type: String, unique: true }, 
   pluginTitle: String, 
-  enable: Boolean
+  enable: Boolean,
+  config: { 
+    realtime_delay: Number,
+    listen_ratio: Number,
+    data_delay_from: Number,
+    data_delay_to: Number
+  }
+  //Schema.Types.Mixed
 });
 
 PluginSchema.statics.getPluginEnabled = function(type, cb) {
@@ -41,10 +48,10 @@ PluginSchema.statics.setPluginEnable = function(type, name, cb) {
             });
           }
         })
+        
       }
     });
 };
-
 
 PluginSchema.statics.checkAndUpdate = function(plugins, cb) {
   var parent = this;
@@ -88,6 +95,24 @@ PluginSchema.statics.checkAndUpdate = function(plugins, cb) {
       });
     });
   }
+};
+
+
+PluginSchema.statics.updatePluginConfig = function(name, value, cb) {
+  this
+    .findOne({pluginName: name})
+    .exec(function(err, plugin) {
+      if (err) { return cb(err); }
+
+      var configuration = plugin.config;
+      for (var attr in value) { configuration[attr] = value[attr];}
+      plugin.config = configuration;
+      plugin.save(function(err,d) {
+        if(err) console.log(err);
+      });
+
+      cb(null, configuration);
+    });
 };
 
 var Plugin = mongoose.model('Plugin', PluginSchema);

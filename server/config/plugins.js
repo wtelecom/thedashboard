@@ -11,7 +11,7 @@ var plugins = [
     name: 'acquisitor',
     pluginName: 'phoenix',
     pluginTitle: 'Phoenix',
-    active: true, 
+    active: true,
     config: {
       jdbc: {
         url: 'jdbc:phoenix:10.128.19.62',
@@ -28,7 +28,14 @@ var plugins = [
           path.join(config.root, 'server', 'plugins', 'acquisitor', 'phoenix', 'jar', 'hbase-site.xml')
         ],
         driverName: 'org.apache.phoenix.jdbc.PhoenixDriver',
-      }
+      },
+      // Waiting seconds to listen new events
+      realtime_delay: [10, 20, 30, 60],
+      listen_ratio: [1, 2, 3, 4, 5],
+
+      // Error margin to use data saved in the persistor (in hours)
+      data_delay_from: [1, 2, 3, 5, 10, 24],
+      data_delay_to: [1, 2, 3, 5, 10, 24]
     }
   },
   {
@@ -58,12 +65,10 @@ var plugins = [
       // Waiting seconds to listen new events
       realtime_delay: [10, 20, 30, 60],
       // Listen events ratio
-      listen_ratio: [1,2,3,4,5],
+      listen_ratio: [1, 2, 3, 4, 5],
       // Error margin to use data saved in the persistor (in hours)
-      data_delay: {
-        from: [1, 2, 3, 5, 10, 24],
-        to: [1, 2, 3, 5, 10, 24]
-      }
+      data_delay_from: [1, 2, 3, 5, 10, 24],
+      data_delay_to: [1, 2, 3, 5, 10, 24]
     }
   },
   {

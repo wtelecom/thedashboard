@@ -33,14 +33,30 @@ var _ = require('lodash'),
 function isAdmin(user) {
   return config.userRoles.indexOf(user.role) >= config.userRoles.indexOf('admin');
 }
-
+ 
 // Plugins
 // Get plugins info
 exports.pluginsInfo = function(req, res) {
-  PluginModel.find(function (err, data) {
+  PluginModel.find().lean().exec(function (err, data) {
     if(err) { return handleError(res, err); }
-    return res.json(200, {response: "ok", data: data});
+    
+    var setup = [];
+    //console.log(req.app.get('plugins'));
+    _.forEach(_.where(data, { "name":"acquisitor"}), function(acquisitor,key) {
+      setup = _.where(req.app.get('plugins'), {"pluginName": acquisitor.pluginName})[0];
+
+      acquisitor['setup'] = {
+        'realtime_delay' : setup.config.realtime_delay,
+        'listen_ratio'   : setup.config.listen_ratio,
+        'data_delay_from': setup.config.data_delay_from,
+        'data_delay_to'  : setup.config.data_delay_to,
+      };
+
+    });
+
+    return res.json(200, {response: "ok", data: data });
   });
+
 };
 
 // Update plugin
@@ -69,6 +85,20 @@ exports.pluginsSetEnable = function(req, res) {
   }
 };
 
+/*
+ * Update Acquisitor time delay config
+ * @query: request
+ * @query: response
+ */
+exports.acquisitorConfigUpdate = function(req, res) {
+
+  var name = req.params.name;
+
+  PluginModel.updatePluginConfig(name, req.body, function(err, config) {
+    if (err) { return handleError(res, err); }
+    return res.json(200, {response: "ok", data: config });
+  });
+};
 
 // Visualizations
 exports.visualization = function(req, res) {
