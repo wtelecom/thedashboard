@@ -26,7 +26,6 @@ angular.module('thedashboardApp')
         this.notifyObservers(name);
       },
       setAbsolute: function(dates) {
-        console.log(dates);
         this.mode = 'absolute';
         this.absoluteDates = dates;
         this.notifyObservers('absolute');

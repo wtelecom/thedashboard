@@ -1,12 +1,12 @@
 'use strict';
 
 angular.module('thedashboardApp')
-  .service('DashboardService', function DashBoardService($http, socket, $q, queryService, Settings) {
+  .service('DashboardService', function DashBoardService($http, socket, $q, queryService, Settings, TimeFilter) {
     var items = [];
     var currentRow = 0;
     var charts = {};
     return {
-      addVisulization: function(visualization, visualizatorService) {
+      addVisualization: function(visualization, visualizatorService) {
         items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: visualization._id, name: visualization.name});
         currentRow += 1;
         queryService.createTask(
@@ -15,14 +15,18 @@ angular.module('thedashboardApp')
           {
             redis: {
               name: visualization.name,
-              time: {
-                from: null,
-                to: null
-              },
               id: visualization._id
             },
             mongo: {
               data: visualization.json
+            },
+            time: {
+              from: TimeFilter.from(),
+              to: TimeFilter.to()
+            },
+            config: {
+              from: 1,
+              to: 1
             }
           },
           function(data) {
@@ -85,12 +89,12 @@ angular.module('thedashboardApp')
         var parent = this;
         settingsPromise.then(function(dashboard) {
           _.forEach(dashboard.visualizations, function(visualization) {
-            parent.addVisulization(visualization, visualizatorService);
+            parent.addVisualization(visualization, visualizatorService);
           });
           deferred.resolve(items);
         });
         return deferred.promise;
       }
     }
-    
+
   });

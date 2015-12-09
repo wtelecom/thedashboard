@@ -89,7 +89,7 @@ PluginModel.checkAndUpdate(pluginsConfig, function() {
             visualizations: [],
             matrix: [],
             time: { from: new Date(), to: new Date()},
-            progress: i*10/2
+            progress: 100
           }, function() {
             if (i == nReports - 1) {
               console.log('finished populating reports');

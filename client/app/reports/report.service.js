@@ -6,55 +6,28 @@ angular.module('thedashboardApp')
     var currentRow = 0;
     var charts = {};
     return {
-      addVisualization: function(visualization, visualizatorService) {
-        items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: visualization._id, name: visualization.name});
+      addVisualization: function(taskReport, visualizatorService) {
+        items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: taskReport.id, name: taskReport.name});
         currentRow += 1;
-        queryService.createTask(
-          'query',
-          'check',
-          {
-            redis: {
-              name: visualization.name,
-              id: visualization._id
-            },
-            mongo: {
-              data: visualization.json
-            },
-            time: {
-              from: TimeFilter.from(),
-              to: TimeFilter.to()
-            },
-            config: {
-              from: 24,
-              to: 24
-            }
-          },
-          function(data) {
-            if (data.response !== 'error') {
-              createSocket("query-" + data.data.job, function(data) {
-                console.log("Task %d event received", data.job);
-                queryService.getTaskData(
-                  data.job,
-                  function(taskData) {
-                    visualizatorService.data(taskData.data.visualization);
-                    visualizatorService.onresize = function(){resize(visualization._id)};
-                    visualizatorService.bind('#vis-' + visualization._id);
-                    var chart = visualizatorService.render();
-                    charts[visualization._id] = chart;
-                    resize(visualization._id);
-                  }
-                );
-              });
-            }
+        queryService.getTaskData(
+          taskReport.id,
+          function(taskData) {
+            console.log(taskData);
+            visualizatorService.data(taskData.data.visualization);
+            visualizatorService.onresize = function(){resize(taskReport)};
+            visualizatorService.bind('#vis-' + taskReport.id);
+            var chart = visualizatorService.render();
+            charts[taskReport.id] = chart;
+            resize(taskReport.id);
           }
         );
-
-        function createSocket(name, cb) {
-          console.log("Creating socket %s", name);
-          socket.socket.on(name, function(data) {
-            cb(data);
-          });
-        }
+        //
+        // function createSocket(name, cb) {
+        //   console.log("Creating socket %s", name);
+        //   socket.socket.on(name, function(data) {
+        //     cb(data);
+        //   });
+        // }
 
         // This function use resize method of the c3js charts to modify its sizes.
         // Is used to adjust the chart to its containers
@@ -84,12 +57,14 @@ angular.module('thedashboardApp')
         }
       },
       loadReportVisualizations: function(reportId, visualizatorService) {
+
         var deferred = $q.defer();
         var settingsPromise = Settings.broker('reports', 'getData', {_id: reportId});
         var parent = this;
+
         settingsPromise.then(function(report) {
-          _.forEach(report.visualizations, function(visualization) {
-            parent.addVisualization(visualization, visualizatorService);
+          _.forEach(report.matrix, function(taskReport) {
+            parent.addVisualization(taskReport, visualizatorService);
           });
           deferred.resolve(items);
         });

@@ -4,6 +4,7 @@
       .panel-body.h-200
         .stats-title.pull-left
           h3.text-success Available Reports
+        
         table.table.table-hover.dashboards
           thead
             th Name
@@ -12,12 +13,18 @@
             th(colspan="2") Actions
           tbody
             tr(ng-repeat='report in reports')
+              
               td(width="10%") {{ report.name }}
               td(width="30%") From: {{ format(report.time.from) }} <br/> To: {{ format(report.time.to) }}
               td
-                .progress
-                  .progress-bar.progress-bar-info(role="progressbar", aria-valuenow="{{ report.progress }}", aria-valuemin="0", aria-valuemax="100", style="width: {{ report.progress }}%;")
-                    {{ report.progress }} %
+                //{{ report.matrix.length }}
+                span(ng-if="report.progress")
+                  | Available 
+                span(ng-if="!report.progress")
+                  | creating report...
+                //.progress
+                //  .progress-bar.progress-bar-info(role="progressbar", aria-valuenow="{{ report.progress }}", aria-valuemin="0", aria-valuemax="100", style="width: {{ report.progress }}%;")
+                //    {{ report.progress }} %
               td.min(width="1%")
                 a.btn.btn-default.btn-xs(ui-sref="main.reports.open({id: report._id})")
                   i.glyphicon.glyphicon-eye-open
@@ -37,7 +44,7 @@
                 |                     
                 a.closebox
                   i.fa.fa-times
-                | {{ item.name }}
+              | {{ item.name }}
             .panel-body
               div(id="vis-{{ item.id }}")
 

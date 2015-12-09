@@ -1,13 +1,69 @@
 'use strict';
 
 angular.module('thedashboardApp')
-  .controller('ReportsCtrl', function ($scope, $modal, Plugin, $injector, Settings, queryService, socket, TimeFilter) {
+  .controller('ReportsCtrl', function ($scope, $modal, Plugin, $injector, Settings, queryService, socket, TimeFilter, VisualizationService) {
+
+    TimeFilter.registerObserver('absolute', updateVisualizations);
+    //TimeFilter.registerObserver('quick', updateVisualizations);
 
     var charts = {};
     var currentRow = 0;
     $scope.reportVisualizations = [];
 
     getPlugins();
+
+    function updateVisualizations() {
+      $scope.reportVisualizations = [];
+      if ($scope.items.length) {
+        _.forEach($scope.items, function(item) {
+          // console.log(item);
+          var VisualizationPromise = VisualizationService.loadVisualization(item.id);
+          VisualizationPromise.then(function(visualization) {
+            queryService.createTask(
+              'query',
+              'check',
+              {
+                redis: {
+                  name: item.name,
+                  id: item.id
+                },
+                mongo: {
+                  data: visualization.json
+                },
+                time: {
+                  from: TimeFilter.from(),
+                  to: TimeFilter.to()
+                },
+                config: {
+                  from: 1,
+                  to: 1
+                }
+              },
+              function(data) {
+                //console.log(data);
+                if (data.response !== 'error') {
+                  createSocket("query-" + data.data.job, function(data) {
+                    console.log("Task %d event received", data.job);
+                    queryService.getTaskData(
+                      data.job,
+                      function(taskData) {
+                        $scope.visualizatorService.data(taskData.data.visualization);
+                        $scope.reportVisualizations.push(data.job.toString());
+                        $scope.visualizatorService.onresize = function(){resize(visualization._id)};
+                        $scope.visualizatorService.bind('#vis-' + visualization._id);
+                        var chart = $scope.visualizatorService.render();
+                        charts[visualization._id] = chart;
+                        resize(visualization._id);
+                      }
+                    );
+                  });
+                }
+              });
+            });
+          });
+        }
+      }
+
 
     function getPlugins() {
       $scope.plugins = {};
@@ -102,6 +158,7 @@ angular.module('thedashboardApp')
     $scope.animationsEnabled = true;
 
     $scope.openVisualizationModal = function() {
+
       var modalAddInstance = $modal.open({
         animation: $scope.animationsEnabled,
         templateUrl: 'ModalVisualizationOpenContent',
@@ -116,10 +173,10 @@ angular.module('thedashboardApp')
         }
       });
 
+
       modalAddInstance.result.then(function(visualization) {
-        $scope.reportVisualizations.push(visualization._id);
-        $scope.items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: visualization._id, name: visualization.name});
-        //var config = Plugin.getAcquisitorConfig();
+        // $scope.reportVisualizations.push(visualization._id);
+        // console.log($scope.items);
         currentRow += 1;
         queryService.createTask(
           'query',
@@ -142,18 +199,23 @@ angular.module('thedashboardApp')
             }
           },
           function(data) {
+            // _.last($scope.items).id = data.data.job;
+            $scope.reportVisualizations.push(data.data.job);
+            $scope.items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: data.data.job, name: visualization.name});
+            //console.log($scope.items);
             if (data.response !== 'error') {
               createSocket("query-" + data.data.job, function(data) {
                 console.log("Task %d event received", data.job);
                 queryService.getTaskData(
                   data.job,
                   function(taskData) {
+                    //console.log(visualization);
                     $scope.visualizatorService.data(taskData.data.visualization);
-                    $scope.visualizatorService.onresize = function(){resize(visualization._id)};
-                    $scope.visualizatorService.bind('#vis-' + visualization._id);
+                    $scope.visualizatorService.onresize = function(){resize(data.job)};
+                    $scope.visualizatorService.bind('#vis-' + data.job);
                     var chart = $scope.visualizatorService.render();
-                    charts[visualization._id] = chart;
-                    resize(visualization._id);
+                    charts[data.job] = chart;
+                    resize(data.job);
                   }
                 );
               });
@@ -170,23 +232,30 @@ angular.module('thedashboardApp')
         controller: 'ModalSaveReportInstanceController'
       });
 
+      //console.log($scope.reportVisualizations);
       modalSaveInstance.result.then(function(data) {
-        // TODO: Check if dashboard is ready to be saved (unique name, etc)
+        console.log(data);
+        // TODO: Check if report is ready to be saved (unique name, etc)
         if (!_.isEmpty($scope.reportVisualizations)) {
+        //  console.log($scope.reportVisualizations);
           queryService.saveData(
             'reports',
             {
               name: data,
               visualizatorPlugin: $scope.plugins.visualizatorActive,
               acquisitorPlugin: $scope.plugins.acquisitorActive,
-              visualizations: $scope.reportVisualizations,
+              reports: $scope.reportVisualizations,
               matrix: $scope.items,
               time: {
                 from: TimeFilter.from(),
                 to: TimeFilter.to()
-              }
+              },
+              progress: null
             },
-            function(){}
+            function(data){
+              //console.log(data);
+
+            }
           );
         }
       });
@@ -208,18 +277,20 @@ angular.module('thedashboardApp')
     $rootScope.sectionDescription = "Open a report";
     $scope.selectedReport = true;
 
+
     if($stateParams.id) {
       $scope.selectedReport = false;
-
       var pluginsAcquisitorPromise = Plugin.broker('getAcquisitorPlugins');
       pluginsAcquisitorPromise.then(function(acquisitorPlugins) {
         var visualizatorService = $injector.get(Plugin.getVisualizator() + "Visualizator");
         var reportPromise = ReportService.loadReportVisualizations($stateParams.id, visualizatorService);
+
         reportPromise.then(function(items) {
           $scope.items = items;
         });
       });
     } else {
+
       var settingsPromise = Settings.broker('reports', 'getData', {});
       settingsPromise.then(function(reports) {
         $scope.reports = reports;
@@ -238,6 +309,7 @@ angular.module('thedashboardApp')
   .controller('ModalOpenInstanceController', function ($scope, $modalInstance, visualizations, visualizatorService) {
     $scope.visualizations = visualizations;
     $scope.visualizatorService = visualizatorService;
+
     $scope.addVisualization = function(visualization) {
       $scope.cancel(visualization);
     };

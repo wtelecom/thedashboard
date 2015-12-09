@@ -8,7 +8,6 @@ var _ = require('lodash'),
   settingQuery = require('./lib/queries/setting'),
   checkQuery = require('./lib/queries/check');
 
-
 module.exports = Engine;
 
 function Engine(app) {
@@ -30,8 +29,8 @@ Engine.prototype.select = function(type, subtype, data, task, cb) {
       settingQuery(this, data, task, cb);
       break;
     case 'check':
-      // console.log(data);
       checkQuery(this, data, task, cb);
       break;
+
   }
 };

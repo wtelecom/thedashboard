@@ -10,7 +10,7 @@ function TimeUtil() {
     var dSrc = moment(dateOne);
     var dDst = moment(dateTwo);
     var dr = moment.range(dateOne, dateTwo);
-    return ((dr.diff(diffScope) >= diffFactor) ? false : true);
+
+    return ((dr.diff(diffScope) >= diffFactor) ? true : false);
   };
 }
-

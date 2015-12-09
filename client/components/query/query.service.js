@@ -5,7 +5,6 @@ angular.module('thedashboardApp')
     return {
         // Creates a task in the backend and returns the task id
         createTask: function(type, subtype, data, cb) {
-          //console.log(data);
           $http.post(apiPrefix + '/broker/task', {type: type, subtype: subtype, data: data}).
             success(function(data) {
               if (data.response === "error") { return cb(data); }

@@ -66,7 +66,7 @@ Persistor.prototype.getVisualizationResults = function(data) {
   // TODO: Get a real value to set "Margin of Error"
   // For test purposes the ME has been established to 10 hours
   this.client.get("visualization:" + data.redis.id, function(err, result) {
-    //deferred.resolve(JSON.parse(result));
+
     if (err) deferred.resolve(false);
     if (result) {
       var visualization = JSON.parse(result);
