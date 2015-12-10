@@ -33,13 +33,13 @@ var _ = require('lodash'),
 function isAdmin(user) {
   return config.userRoles.indexOf(user.role) >= config.userRoles.indexOf('admin');
 }
- 
+
 // Plugins
 // Get plugins info
 exports.pluginsInfo = function(req, res) {
   PluginModel.find().lean().exec(function (err, data) {
     if(err) { return handleError(res, err); }
-    
+
     var setup = [];
     //console.log(req.app.get('plugins'));
     _.forEach(_.where(data, { "name":"acquisitor"}), function(acquisitor,key) {
@@ -52,6 +52,10 @@ exports.pluginsInfo = function(req, res) {
         'data_delay_to'  : setup.config.data_delay_to,
       };
 
+    });
+
+    _.forEach(data, function(plugin, key) {
+      setup = _.where(req.app.get('plugins'), {"pluginName": plugin.pluginName})[0];
     });
 
     return res.json(200, {response: "ok", data: data });
@@ -125,8 +129,8 @@ exports.visualization = function(req, res) {
     });
   } else if (req.method == 'PUT') {
     VisualizationModel.findByIdAndUpdate(
-      req.params.id, 
-      { 
+      req.params.id,
+      {
         $set: req.body.data
       },
       function (err, data) {
