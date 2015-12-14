@@ -37,10 +37,17 @@ function isAdmin(user) {
 // Plugins
 // Get plugins info
 exports.pluginsInfo = function(req, res) {
-  PluginModel.find(function (err, data) {
+  PluginModel.find().lean().exec(function (err, data) {
     if(err) { return handleError(res, err); }
-    return res.json(200, {response: "ok", data: data});
+
+    _.forEach(data, function(plugin) {
+      var pluginSetup = _.pluck(_.where(req.app.get('plugins'), {"pluginName": plugin.pluginName}), 'config')[0].setup;
+      plugin['setup'] = pluginSetup;
+    });
+
+    return res.json(200, {response: "ok", data: data });
   });
+
 };
 
 // Update plugin
@@ -69,6 +76,20 @@ exports.pluginsSetEnable = function(req, res) {
   }
 };
 
+/*
+ * Update Acquisitor time delay config
+ * @query: request
+ * @query: response
+ */
+exports.acquisitorConfigUpdate = function(req, res) {
+
+  var name = req.params.name;
+
+  PluginModel.updatePluginConfig(name, req.body, function(err, config) {
+    if (err) { return handleError(res, err); }
+    return res.json(200, {response: "ok", data: config });
+  });
+};
 
 // Visualizations
 exports.visualization = function(req, res) {
@@ -95,8 +116,8 @@ exports.visualization = function(req, res) {
     });
   } else if (req.method == 'PUT') {
     VisualizationModel.findByIdAndUpdate(
-      req.params.id, 
-      { 
+      req.params.id,
+      {
         $set: req.body.data
       },
       function (err, data) {
