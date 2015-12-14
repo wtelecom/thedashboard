@@ -6,7 +6,10 @@ angular.module('thedashboardApp')
   })
   .controller('SettingsTabController', function ($scope, $cacheFactory, Plugin, $http, $injector, queryService, Settings) {
     $scope.plugins = {};
-    $scope.config = {};
+    $scope.config = {
+      acquisitor: {},
+      visualizator: {}
+    };
     // Initializing plugins tab
     initTabPlugins();
 
@@ -20,11 +23,9 @@ angular.module('thedashboardApp')
         $scope.plugins.eventors = Plugin.getEventorPlugins();
         $scope.plugins.eventorActive = Plugin.getEventor();
         $scope.plugins.acquisitorSetup = Plugin.getAcquisitorSetup();
-        $scope.config.realtime_delay   = Plugin.getAcquisitorConfig().realtime_delay;
-        $scope.config.listen_ratio    = String(Plugin.getAcquisitorConfig().listen_ratio);
-        $scope.config.data_delay_from = String(Plugin.getAcquisitorConfig().data_delay_from);
-        $scope.config.data_delay_to   = String(Plugin.getAcquisitorConfig().data_delay_to);
-        //$scope.plugins.acquisitorConfig = Plugin.getAcquisitorConfig();
+
+        // Setting acquisitor config variables 
+        $scope.config.acquisitor = Plugin.getAcquisitorConfig();
         $scope.visualizatorService = $injector.get($scope.plugins.visualizatorActive + "Visualizator");
       });
     }
@@ -38,7 +39,7 @@ angular.module('thedashboardApp')
 
     $scope.acquisitorSetConfig = function(field, value) {
       var name = $scope.plugins.acquisitorActive;
-      Plugin.setPluginConfig(name, field, value, function(data){
+      Plugin.setPluginConfig('acquisitor', name, field, value, function(data){
       });
     }
 

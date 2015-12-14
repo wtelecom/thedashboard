@@ -40,22 +40,9 @@ exports.pluginsInfo = function(req, res) {
   PluginModel.find().lean().exec(function (err, data) {
     if(err) { return handleError(res, err); }
 
-    var setup = [];
-    //console.log(req.app.get('plugins'));
-    _.forEach(_.where(data, { "name":"acquisitor"}), function(acquisitor,key) {
-      setup = _.where(req.app.get('plugins'), {"pluginName": acquisitor.pluginName})[0];
-
-      acquisitor['setup'] = {
-        'realtime_delay' : setup.config.realtime_delay,
-        'listen_ratio'   : setup.config.listen_ratio,
-        'data_delay_from': setup.config.data_delay_from,
-        'data_delay_to'  : setup.config.data_delay_to,
-      };
-
-    });
-
-    _.forEach(data, function(plugin, key) {
-      setup = _.where(req.app.get('plugins'), {"pluginName": plugin.pluginName})[0];
+    _.forEach(data, function(plugin) {
+      var pluginSetup = _.pluck(_.where(req.app.get('plugins'), {"pluginName": plugin.pluginName}), 'config')[0].setup;
+      plugin['setup'] = pluginSetup;
     });
 
     return res.json(200, {response: "ok", data: data });

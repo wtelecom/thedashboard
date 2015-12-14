@@ -24,7 +24,7 @@ angular.module('thedashboardApp')
     return {
       cache: cache,
 
-    // Requests broker
+      // Requests broker
       broker: function(name) {
         if (!cache.get("plugins")) {
           var promise = prepareData(this[name]);
@@ -49,10 +49,10 @@ angular.module('thedashboardApp')
               }
             });
             deferred.resolve(acquisitorPlugins);
-          } else {
-            deferred.resolve({})
-          }
-          return deferred.promise;
+        } else {
+          deferred.resolve({})
+        }
+        return deferred.promise;
       },
 
       // Returns the acquisitor plugin active
@@ -188,11 +188,11 @@ angular.module('thedashboardApp')
       },
 
 
-      setPluginConfig: function(name, field, value, cb) {
+      setPluginConfig: function(type, name, field, value, cb) {
         var setup    = {};
         setup[field] = value;
 
-        $http.post(apiPrefix + '/data/plugins/update/acquisitor/' + name, setup)
+        $http.post(apiPrefix + '/data/plugins/update/' + type + '/' + name, setup)
           .success(function(data) {
             return cb(data);
           })
