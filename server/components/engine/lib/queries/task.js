@@ -1,0 +1,53 @@
+
+
+module.exports = taskQuery;
+
+
+function taskQuery(parent, queryData, task, cb) {
+
+  var data = {
+    visualizatorPluginObj: null,
+    VisualizatorPlugin: null,
+    query: null,
+    time: null
+  };
+
+  // Getting the visualizator plugin
+  parent.visualizator.plugin()
+  .then(function(dataVisualizator) {
+    data.visualizatorPluginObj = parent.visualizator.getObject(parent.app.get('plugins'), dataVisualizator);
+    // Instantiating Visulazator plugin
+    data.VisualizatorPlugin = new (require(data.visualizatorPluginObj.path))();
+    // In this call, you must transform the frontend JSON to SQL or whatever
+    return parent.acquisitor.queryClient.execQuery(queryData);
+  })
+  .then(function(queryResult) {
+    // Passing the Acquisitor results to the Visualizator plugin
+    data.VisualizatorPlugin.data = queryResult.rows;
+    // Setting query
+    data.query = queryResult.query;
+
+    data.time = { from: queryData.time.from, to: queryData.time.to };
+
+    // Passing the raw data to the Visualizator plugin
+    data.VisualizatorPlugin.raw = queryData;
+    // Setting the Acquisitor name in the visualizator in order to do a proper parsing
+    data.VisualizatorPlugin.acquisitorParser = parent.acquisitor.name;
+    // In this call, you must transform the acquisitor results to C3 valid data
+    // From Parser, you should choose the proper parser in order to adapt
+    // the results to C3
+    return data.VisualizatorPlugin.parser();
+  })
+  // Saving task results in Redis
+  .then(function(visualizatorData) {
+    return parent.persistor.saveReportResults(task, {
+      visualization: visualizatorData,
+      query: data.query,
+      time: data.time
+    });
+  })
+  // Emitting an event in order to refresh the web visualization
+  .then(function() {
+    cb();
+  });
+}

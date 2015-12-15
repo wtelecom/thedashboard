@@ -36,6 +36,25 @@ Persistor.prototype.saveTaskResults = function(task, data) {
   return deferred.promise;
 };
 
+
+Persistor.prototype.saveReportResults = function(task, data) {
+  var deferred = Q.defer();
+  var parent = this;
+
+  this.client.mset(
+    'report:' + task,
+    JSON.stringify(data),
+    function(err, response) {
+      if (!err) {
+        deferred.resolve();
+      }
+    }
+  );
+
+  return deferred.promise;
+};
+
+
 Persistor.prototype.saveVisualization = function(data) {
   var deferred = Q.defer();
   var parent = this;
@@ -59,6 +78,12 @@ Persistor.prototype.getTaskResults = function(task, cb) {
   });
 };
 
+Persistor.prototype.getReportData = function(id, cb) {
+  this.client.get("report:" + id, function(err, result) {
+    cb(JSON.parse(result));
+  });
+};
+
 Persistor.prototype.getVisualizationResults = function(data) {
   var deferred = Q.defer();
   var TimeUtilInstance = new timeUtil();
@@ -70,7 +95,6 @@ Persistor.prototype.getVisualizationResults = function(data) {
     if (err) deferred.resolve(false);
     if (result) {
       var visualization = JSON.parse(result);
-
       deferred.resolve(
         (
           (
@@ -84,5 +108,6 @@ Persistor.prototype.getVisualizationResults = function(data) {
       deferred.resolve(false);
     }
   });
+
   return deferred.promise;
 };

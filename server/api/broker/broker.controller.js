@@ -7,6 +7,7 @@ var EngineSystem = require('../../components/engine');
 
 // Creates a task and returns the task id
 exports.task = function(req, res) {
+
   var brokerRequestType = req.body.type,
       brokerRequestSubType = req.body.subtype,
       brokerRequestData = req.body.data,
@@ -69,3 +70,22 @@ exports.time = function(req, res) {
 function handleError(res, err) {
   return res.send(500, err);
 }
+
+
+// Returns task results
+exports.reportResult = function(req, res) {
+  var tasker = req.app.get('tasker');
+  var persistor = req.app.get('persistor');
+  var engine = new EngineSystem(req.app);
+
+  var brokerRequestTask = req.params.id;
+
+  tasker.getReportData(
+    brokerRequestTask,
+    persistor,
+    function(data) {
+      // TODO: Check errors
+      return res.json(200, {response: 'ok', data: data});
+    }
+  );
+};

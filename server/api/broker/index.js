@@ -9,5 +9,6 @@ router.post('/task', controller.task);
 router.get('/task/:id', controller.taskResult);
 router.get('/time', controller.time);
 router.post('/time', controller.time);
+router.get('/report/:id', controller.reportResult);
 
 module.exports = router;

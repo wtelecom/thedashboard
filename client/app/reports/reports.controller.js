@@ -3,67 +3,11 @@
 angular.module('thedashboardApp')
   .controller('ReportsCtrl', function ($scope, $modal, Plugin, $injector, Settings, queryService, socket, TimeFilter, VisualizationService) {
 
-    TimeFilter.registerObserver('absolute', updateVisualizations);
-    //TimeFilter.registerObserver('quick', updateVisualizations);
-
     var charts = {};
     var currentRow = 0;
     $scope.reportVisualizations = [];
 
     getPlugins();
-
-    function updateVisualizations() {
-      $scope.reportVisualizations = [];
-      if ($scope.items.length) {
-        _.forEach($scope.items, function(item) {
-          // console.log(item);
-          var VisualizationPromise = VisualizationService.loadVisualization(item.id);
-          VisualizationPromise.then(function(visualization) {
-            queryService.createTask(
-              'query',
-              'check',
-              {
-                redis: {
-                  name: item.name,
-                  id: item.id
-                },
-                mongo: {
-                  data: visualization.json
-                },
-                time: {
-                  from: TimeFilter.from(),
-                  to: TimeFilter.to()
-                },
-                config: {
-                  from: 1,
-                  to: 1
-                }
-              },
-              function(data) {
-                //console.log(data);
-                if (data.response !== 'error') {
-                  createSocket("query-" + data.data.job, function(data) {
-                    console.log("Task %d event received", data.job);
-                    queryService.getTaskData(
-                      data.job,
-                      function(taskData) {
-                        $scope.visualizatorService.data(taskData.data.visualization);
-                        $scope.reportVisualizations.push(data.job.toString());
-                        $scope.visualizatorService.onresize = function(){resize(visualization._id)};
-                        $scope.visualizatorService.bind('#vis-' + visualization._id);
-                        var chart = $scope.visualizatorService.render();
-                        charts[visualization._id] = chart;
-                        resize(visualization._id);
-                      }
-                    );
-                  });
-                }
-              });
-            });
-          });
-        }
-      }
-
 
     function getPlugins() {
       $scope.plugins = {};
@@ -176,11 +120,11 @@ angular.module('thedashboardApp')
 
       modalAddInstance.result.then(function(visualization) {
         // $scope.reportVisualizations.push(visualization._id);
-        // console.log($scope.items);
         currentRow += 1;
+
         queryService.createTask(
           'query',
-          'check',
+          'report',
           {
             redis: {
               name: visualization.name,
@@ -199,17 +143,16 @@ angular.module('thedashboardApp')
             }
           },
           function(data) {
-            // _.last($scope.items).id = data.data.job;
+            console.log(data);
             $scope.reportVisualizations.push(data.data.job);
             $scope.items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: data.data.job, name: visualization.name});
-            //console.log($scope.items);
             if (data.response !== 'error') {
               createSocket("query-" + data.data.job, function(data) {
                 console.log("Task %d event received", data.job);
-                queryService.getTaskData(
+                queryService.getData(
                   data.job,
+                  'report',
                   function(taskData) {
-                    //console.log(visualization);
                     $scope.visualizatorService.data(taskData.data.visualization);
                     $scope.visualizatorService.onresize = function(){resize(data.job)};
                     $scope.visualizatorService.bind('#vis-' + data.job);
@@ -232,12 +175,9 @@ angular.module('thedashboardApp')
         controller: 'ModalSaveReportInstanceController'
       });
 
-      //console.log($scope.reportVisualizations);
       modalSaveInstance.result.then(function(data) {
-        console.log(data);
         // TODO: Check if report is ready to be saved (unique name, etc)
         if (!_.isEmpty($scope.reportVisualizations)) {
-        //  console.log($scope.reportVisualizations);
           queryService.saveData(
             'reports',
             {
@@ -252,10 +192,7 @@ angular.module('thedashboardApp')
               },
               progress: null
             },
-            function(data){
-              //console.log(data);
-
-            }
+            function(data) {}
           );
         }
       });
@@ -272,29 +209,33 @@ angular.module('thedashboardApp')
     $rootScope.sectionName = "Reports";
     $rootScope.sectionDescription = "Create a new Report";
   })
-  .controller('ReportsOpenCtrl', function ($scope, $rootScope, Plugin, $stateParams, Settings, $location, $injector, ReportService) {
+  .controller('ReportsOpenCtrl', function ($scope, $rootScope, Plugin, $stateParams, Settings, $location, $injector, ReportService, TimeFilter) {
     $rootScope.sectionName = "Reports";
     $rootScope.sectionDescription = "Open a report";
-    $scope.selectedReport = true;
 
+    TimeFilter.registerObserver('absolute', loadVisualizations);
 
-    if($stateParams.id) {
-      $scope.selectedReport = false;
-      var pluginsAcquisitorPromise = Plugin.broker('getAcquisitorPlugins');
-      pluginsAcquisitorPromise.then(function(acquisitorPlugins) {
-        var visualizatorService = $injector.get(Plugin.getVisualizator() + "Visualizator");
-        var reportPromise = ReportService.loadReportVisualizations($stateParams.id, visualizatorService);
+    function loadVisualizations() {
+      $scope.selectedReport = true;
 
-        reportPromise.then(function(items) {
-          $scope.items = items;
+      if($stateParams.id) {
+        $scope.selectedReport = false;
+        var pluginsAcquisitorPromise = Plugin.broker('getAcquisitorPlugins');
+        pluginsAcquisitorPromise.then(function(acquisitorPlugins) {
+          var visualizatorService = $injector.get(Plugin.getVisualizator() + "Visualizator");
+          var reportPromise = ReportService.loadReportVisualizations($stateParams.id, visualizatorService);
+
+          reportPromise.then(function(items) {
+            $scope.items = items;
+          });
         });
-      });
-    } else {
+      } else {
 
-      var settingsPromise = Settings.broker('reports', 'getData', {});
-      settingsPromise.then(function(reports) {
-        $scope.reports = reports;
-      });
+        var settingsPromise = Settings.broker('reports', 'getData', {});
+        settingsPromise.then(function(reports) {
+          $scope.reports = reports;
+        });
+      }
     }
 
     $scope.format = function (date) {

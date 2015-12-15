@@ -1,5 +1,3 @@
-
-
 var _ = require('lodash'),
   Acquisitor = require('./lib/acquisitor'),
   Visualizator = require('./lib/visualizator'),
@@ -7,6 +5,7 @@ var _ = require('lodash'),
   visualizationQuery = require('./lib/queries/visualization'),
   settingQuery = require('./lib/queries/setting'),
   checkQuery = require('./lib/queries/check');
+  reportQuery = require('./lib/queries/report');
 
 module.exports = Engine;
 
@@ -30,6 +29,9 @@ Engine.prototype.select = function(type, subtype, data, task, cb) {
       break;
     case 'check':
       checkQuery(this, data, task, cb);
+      break;
+    case 'report':
+      reportQuery(this, data, task, cb);
       break;
 
   }

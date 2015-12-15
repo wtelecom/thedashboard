@@ -1,9 +1,10 @@
 'use strict';
 
 angular.module('thedashboardApp')
-  .controller('DashboardCtrl', function ($scope, $rootScope, Settings, $modal, Plugin, $injector, socket, queryService, TimeFilter) {
+  .controller('DashboardCtrl', function ($scope, $rootScope, Settings, $modal, Plugin, $injector, socket, queryService, TimeFilter, DashboardService) {
     var charts = {};
     var currentRow = 0;
+
     $scope.dashboardVisualizations = [];
     $rootScope.sectionName = "Home";
     $rootScope.sectionDescription = "Active dashboard";
@@ -138,8 +139,8 @@ angular.module('thedashboardApp')
               to: TimeFilter.to()
             },
             config: {
-              from: 1,
-              to: 1
+              from: 24,
+              to: 24
             }
           },
           function(data) {
@@ -201,30 +202,36 @@ angular.module('thedashboardApp')
     }
 
   })
-  .controller('DashboardOpenCtrl', function ($scope, $rootScope, $stateParams, $injector, Settings, DashboardService, Plugin) {
+  .controller('DashboardOpenCtrl', function ($scope, $rootScope, $stateParams, $injector, Settings, DashboardService, Plugin, TimeFilter) {
     $rootScope.sectionName = "Dashboards";
     $rootScope.sectionDescription = "Open a dashboard";
 
-    // Boolean to set if a dashboard must be shown
-    $scope.selectedDashboard = true;
+    TimeFilter.registerObserver('quick', updateVis);
 
-    if ($stateParams.id) {
-      $scope.selectedDashboard = false;
+    function updateVis() {
+      // Boolean to set if a dashboard must be shown
+      $scope.selectedDashboard = true;
 
-      var pluginsAcquisitorPromise = Plugin.broker('getAcquisitorPlugins');
-      pluginsAcquisitorPromise.then(function(acquisitorPlugins) {
-        var visualizatorService = $injector.get(Plugin.getVisualizator() + "Visualizator");
-        var dashboardPromise = DashboardService.loadDashboardVisualizations($stateParams.id, visualizatorService);
-        dashboardPromise.then(function(items) {
-          $scope.items = items;
+      if ($stateParams.id) {
+        $scope.selectedDashboard = false;
+
+        var pluginsAcquisitorPromise = Plugin.broker('getAcquisitorPlugins');
+        pluginsAcquisitorPromise.then(function(acquisitorPlugins) {
+          var visualizatorService = $injector.get(Plugin.getVisualizator() + "Visualizator");
+          var dashboardPromise = DashboardService.loadDashboardVisualizations($stateParams.id, visualizatorService);
+          dashboardPromise.then(function(items) {
+            $scope.items = items;
+          });
         });
-      });
-    } else {
-      var settingsPromise = Settings.broker('dashboards', 'getData', {});
-      settingsPromise.then(function(dashboards) {
-        $scope.dashboards = dashboards;
-      });
+      } else {
+        var settingsPromise = Settings.broker('dashboards', 'getData', {});
+        settingsPromise.then(function(dashboards) {
+          $scope.dashboards = dashboards;
+        });
+      }
+
     }
+
   })
   .controller('DashboardCreateCtrl', function ($scope, $rootScope, $modal) {
     // TODO: Plugin service was refactorized, check changes!

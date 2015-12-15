@@ -7,12 +7,14 @@ angular.module('thedashboardApp')
     var charts = {};
     return {
       addVisualization: function(taskReport, visualizatorService) {
-        items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: taskReport.id, name: taskReport.name});
+
+        items.push(taskReport);
+        //items.push({ sizeX: taskReport.sizeX, sizeY: taskReport.sizeY, row: currentRow, col: taskReport.row, id: taskReport.id, name: taskReport.name});
         currentRow += 1;
-        queryService.getTaskData(
+        queryService.getData(
           taskReport.id,
+          "report",
           function(taskData) {
-            console.log(taskData);
             visualizatorService.data(taskData.data.visualization);
             visualizatorService.onresize = function(){resize(taskReport)};
             visualizatorService.bind('#vis-' + taskReport.id);
@@ -21,13 +23,6 @@ angular.module('thedashboardApp')
             resize(taskReport.id);
           }
         );
-        //
-        // function createSocket(name, cb) {
-        //   console.log("Creating socket %s", name);
-        //   socket.socket.on(name, function(data) {
-        //     cb(data);
-        //   });
-        // }
 
         // This function use resize method of the c3js charts to modify its sizes.
         // Is used to adjust the chart to its containers

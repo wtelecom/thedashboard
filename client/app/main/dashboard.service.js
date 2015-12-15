@@ -1,11 +1,20 @@
 'use strict';
 
 angular.module('thedashboardApp')
-  .service('DashboardService', function DashBoardService($http, socket, $q, queryService, Settings, TimeFilter) {
+  .service('DashboardService', function DashBoardService($http, socket, $q, queryService, Settings, TimeFilter, $stateParams, $injector, Plugin) {
     var items = [];
     var currentRow = 0;
     var charts = {};
+
+    //TimeFilter.registerObserver('quick', this.updateVisualizations);
+
     return {
+      // updateVisualizations: function() {
+      //   console.log("update");
+      //   var parent = this;
+      //   var visualizatorService = $injector.get(Plugin.getVisualizator() + "Visualizator");
+      //   parent.loadDashboardVisualizations($stateParams.id, visualizatorService);
+      // },
       addVisualization: function(visualization, visualizatorService) {
         items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: visualization._id, name: visualization.name});
         currentRow += 1;
@@ -25,8 +34,8 @@ angular.module('thedashboardApp')
               to: TimeFilter.to()
             },
             config: {
-              from: 1,
-              to: 1
+              from: 24,
+              to: 24
             }
           },
           function(data) {
@@ -84,6 +93,7 @@ angular.module('thedashboardApp')
         }
       },
       loadDashboardVisualizations: function(dashboardId, visualizatorService) {
+        items = [];
         var deferred = $q.defer();
         var settingsPromise = Settings.broker('dashboards', 'getData', {_id: dashboardId});
         var parent = this;

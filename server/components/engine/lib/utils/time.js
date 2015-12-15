@@ -11,6 +11,6 @@ function TimeUtil() {
     var dDst = moment(dateTwo);
     var dr = moment.range(dateOne, dateTwo);
 
-    return ((dr.diff(diffScope) >= diffFactor) ? true : false);
+    return (Math.abs(dr.diff(diffScope)) < diffFactor);
   };
 }

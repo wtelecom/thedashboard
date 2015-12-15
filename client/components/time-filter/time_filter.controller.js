@@ -33,7 +33,6 @@ angular.module('thedashboardApp')
 
     function setModeByUrl(){
       if($state.includes("main.reports")) {
-        console.log($scope.absoluteDate);
         TimeFilter.setAbsolute($scope.absoluteDate);
         $scope.mode = 'absolute';
       } else {
