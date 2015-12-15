@@ -123,6 +123,7 @@ angular.module('thedashboardApp')
         $scope.items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: visualization._id, name: visualization.name});
         currentRow += 1;
 
+        // TODO get from and to from configuration
         queryService.createTask(
           'query',
           'check',

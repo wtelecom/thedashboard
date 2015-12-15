@@ -6,18 +6,12 @@ angular.module('thedashboardApp')
     var currentRow = 0;
     var charts = {};
 
-    //TimeFilter.registerObserver('quick', this.updateVisualizations);
-
     return {
-      // updateVisualizations: function() {
-      //   console.log("update");
-      //   var parent = this;
-      //   var visualizatorService = $injector.get(Plugin.getVisualizator() + "Visualizator");
-      //   parent.loadDashboardVisualizations($stateParams.id, visualizatorService);
-      // },
       addVisualization: function(visualization, visualizatorService) {
         items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: visualization._id, name: visualization.name});
         currentRow += 1;
+
+        // TODO get from and to from configuration
         queryService.createTask(
           'query',
           'check',
