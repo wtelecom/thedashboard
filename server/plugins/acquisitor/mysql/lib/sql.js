@@ -12,14 +12,14 @@ SQLParser.prototype.run = function() {
   inspector = new SQLInspector(this.data, this.query);
 
   inspector.datasource();
-  inspector.fields();
+  // DEPRECATED
+  // inspector.fields();
   inspector.aggregations();
   inspector.groups();
   inspector.orders();
   inspector.limit();
-
   inspector.where();
-  
+
   console.log(this.query.toString());
   return this.query.toString();
 };
@@ -36,14 +36,16 @@ function SQLInspector(data, query) {
     }
   };
 
+  // DEPRECATED
   // Set query fields
-  this.fields = function() {
-    if (this.data.fields) {
-      _.forEach(this.data.fields, function(value, key) {
-        parent.query.field(key);
-      });
-    }
-  };
+  // this.fields = function() {
+  //   console.log(this.data.fields);
+  //   if (this.data.fields) {
+  //     _.forEach(this.data.fields, function(value, key) {
+  //       parent.query.field(key);
+  //     });
+  //   }
+  // };
 
   // Set query aggregations
   this.aggregations = function() {
@@ -96,8 +98,19 @@ function SQLInspector(data, query) {
 
   // Set query where
   this.where = function() {
-   if (this.data.time) {
-     parent.query.where('FSW BETWEEN CAST("' + this.data.time.from + '" AS DATETIME) AND CAST("' + this.data.time.to + '" AS DATETIME)');
-   }
- };
+    if (this.data.filters) {
+      _.forEach(this.data.filters, function(filter) {
+        switch (filter.type) {
+          case 'date':
+            if (this.data.time) {
+              parent.query.where('FSW BETWEEN CAST("' + this.data.time.from + '" AS DATETIME) AND CAST("' + this.data.time.to + '" AS DATETIME)');
+            }
+          case 'number':
+            break;
+          case 'string':
+            break;
+        }
+      });
+    }
+  };
 }
