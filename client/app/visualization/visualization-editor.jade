@@ -32,84 +32,153 @@ div(ng-controller="VisualizationEditorTabController")
       button(mfb-button, icon="ion-play", label="Run visualization", ng-click="runVisualization()") 
   .row
     .col-xs-12
+      div(uib-dropdown, auto-close="disabled", style="display: inline-block;")
+        button(id="vis-fields-btn", type="button", class="btn btn-link", uib-dropdown-toggle)
+          i.fa.fa-table
+        div.uib-dropdown-menu(role="menu", aria-labelledby="vis-fields-btn", style="min-width: 350px; padding: 10px 10px;")
+          .row
+            .col-xs-12
+              .hpanel.hred
+                .panel-body
+                  .form-group(style="margin-bottom: 25px;")
+                    label.control-label Select datasource         
+                    select.form-control.m-b(ng-model="form.datasource", ng-options="datasource.name for datasource in datasources track by datasource.name", ng-change="selectFields(form.datasource)")
+            .col-xs-12
+              .hpanel.hviolet(style="margin-bottom: 0px;")
+                  .panel-heading
+                    .panel-tools
+                      a.showhide
+                        i.fa.fa-chevron-up
+                    | Graph fields
+                  |             
+                  .panel-body
+                    div.row
+                      div.col-md-12.col-xs-12
+                        div.checkbox(ng-repeat="field in fields")
+                          label
+                            input(type="checkbox", ng-model="form.fields[field.name]", ng-click="updateFields(field)")
+                            | {{ field.name }}
+                        .hpanel.hbgorange(style="margin-bottom: 0px;", ng-show="!fields")
+                          .panel-body
+                            .text-center
+                              small No datasource selected
+      div(uib-dropdown, auto-close="disabled", style="display: inline-block;")
+        button(id="vis-data-btn", type="button", class="btn btn-link", uib-dropdown-toggle)
+          i.fa.fa-database
+        div.uib-dropdown-menu(role="menu", aria-labelledby="vis-fields-btn", style="min-width: 350px; padding: 10px 10px; margin-left: -39px;")
+          .row
+            .col-xs-12
+              .hpanel.horange
+                  .panel-heading
+                    .panel-tools
+                      a.showhide
+                        i.fa.fa-chevron-up
+                    | Operations
+                  |             
+                  .panel-body
+                    acquisitor-operations(chart="{{chartType}}")
+            .col-xs-12
+              .hpanel.hred(style="margin-bottom: 0px;")
+                  .panel-heading
+                    .panel-tools
+                      a.showhide
+                        i.fa.fa-chevron-up
+                    | Graph data
+                  |             
+                  .panel-body
+                    visualizator-graphic-data(chart="{{chartType}}")
+      div(uib-dropdown, auto-close="disabled", style="display: inline-block;")
+        button(id="vis-graph-btn", type="button", class="btn btn-link", uib-dropdown-toggle)
+          i.fa.fa-sliders
+        div.uib-dropdown-menu(role="menu", aria-labelledby="vis-graph-btn", style="min-width: 350px; padding: 10px 10px; margin-left: -77px;")
+          .row
+            .col-xs-12
+              .hpanel.hred(style="margin-bottom: 0px;")
+                .panel-body
+                  visualizator-graphic-options(chart="{{chartType}}")
       .hpanel
-        tabset
-          tab
-            tab-heading
-              i.fa.fa-television
-              &nbsp;
-              | Visualization           
-            .tab-content
-              .panel-body
-                .row
-                  .visualizator-container                  
-                    .col-xs-12
-                      visualizator-graphic-editor
-          tab
-            tab-heading
-              i.fa.fa-cog
-              &nbsp;
-              | Data
-            .tab-content
-              .panel-body
-                .row
-                  .visualizator-container
-                    .col-xs-12.col-md-6.col-lg-6
-                      .hpanel.hyellow
-                        .panel-heading
-                          i.fa.fa-database
-                          &nbsp;
-                          | Data
-                        | 
-                        .panel-body
-                          .row
-                            .col-xs-12
-                              .form-group(style="margin-bottom: 25px;")
-                                label.control-label Select datasource         
-                                select.form-control.m-b(ng-model="form.datasource", ng-options="datasource.name for datasource in datasources track by datasource.name", ng-change="selectFields(form.datasource)")
-                            .col-xs-12
-                              .hpanel.hviolet
-                                  .panel-heading
-                                    .panel-tools
-                                      a.showhide
-                                        i.fa.fa-chevron-up
-                                    | Graph fields
-                                  |             
-                                  .panel-body
-                                    div.row
-                                      div.col-md-12.col-xs-12
-                                        div.checkbox(ng-repeat="field in fields")
-                                          label
-                                            input(type="checkbox", ng-model="form.fields[field.name]", ng-click="updateFields(field)")
-                                            | {{ field.name }}
-                                        .hpanel.hbgorange(style="margin-bottom: 0px;", ng-show="!fields")
-                                          .panel-body
-                                            .text-center
-                                              small No datasource selected
-                              .hpanel.horange
-                                  .panel-heading
-                                    .panel-tools
-                                      a.showhide
-                                        i.fa.fa-chevron-up
-                                    | Operations
-                                  |             
-                                  .panel-body
-                                    acquisitor-operations(chart="{{chartType}}")
-                              .hpanel.hred
-                                  .panel-heading
-                                    .panel-tools
-                                      a.showhide
-                                        i.fa.fa-chevron-up
-                                    | Graph data
-                                  |             
-                                  .panel-body
-                                    visualizator-graphic-data(chart="{{chartType}}")
-                    .col-xs-12.col-md-6.col-lg-6
-                      .hpanel.hred
-                        .panel-heading
-                          i.fa.fa-magic
-                          &nbsp;
-                          | Graph effects
-                        | 
-                        .panel-body
-                          visualizator-graphic-options(chart="{{chartType}}")
+        .panel-body
+          .row
+            .visualizator-container                  
+              .col-xs-12      
+                visualizator-graphic-editor
+        //- tabset
+        //-   tab
+        //-     tab-heading
+        //-       i.fa.fa-television
+        //-       &nbsp;
+        //-       | Visualization
+        //-     .tab-content
+        //-       .panel-body
+        //-         .row
+        //-           .visualizator-container                  
+        //-             .col-xs-12      
+        //-               visualizator-graphic-editor
+          //- tab
+          //-   tab-heading
+          //-     i.fa.fa-cog
+          //-     &nbsp;
+          //-     | Data
+          //-   .tab-content
+          //-     .panel-body
+          //-       .row
+          //-         .visualizator-container
+          //-           .col-xs-12.col-md-6.col-lg-6
+          //-             .hpanel.hyellow
+          //-               .panel-heading
+          //-                 i.fa.fa-database
+          //-                 &nbsp;
+          //-                 | Data
+          //-               | 
+          //-               .panel-body
+          //-                 .row
+          //-                   .col-xs-12
+          //-                     .form-group(style="margin-bottom: 25px;")
+          //-                       label.control-label Select datasource         
+          //-                       select.form-control.m-b(ng-model="form.datasource", ng-options="datasource.name for datasource in datasources track by datasource.name", ng-change="selectFields(form.datasource)")
+          //-                   .col-xs-12
+          //-                     .hpanel.hviolet
+          //-                         .panel-heading
+          //-                           .panel-tools
+          //-                             a.showhide
+          //-                               i.fa.fa-chevron-up
+          //-                           | Graph fields
+          //-                         |             
+          //-                         .panel-body
+          //-                           div.row
+          //-                             div.col-md-12.col-xs-12
+          //-                               div.checkbox(ng-repeat="field in fields")
+          //-                                 label
+          //-                                   input(type="checkbox", ng-model="form.fields[field.name]", ng-click="updateFields(field)")
+          //-                                   | {{ field.name }}
+          //-                               .hpanel.hbgorange(style="margin-bottom: 0px;", ng-show="!fields")
+          //-                                 .panel-body
+          //-                                   .text-center
+          //-                                     small No datasource selected
+          //-                     .hpanel.horange
+          //-                         .panel-heading
+          //-                           .panel-tools
+          //-                             a.showhide
+          //-                               i.fa.fa-chevron-up
+          //-                           | Operations
+          //-                         |             
+          //-                         .panel-body
+          //-                           acquisitor-operations(chart="{{chartType}}")
+          //-                     .hpanel.hred
+          //-                         .panel-heading
+          //-                           .panel-tools
+          //-                             a.showhide
+          //-                               i.fa.fa-chevron-up
+          //-                           | Graph data
+          //-                         |             
+          //-                         .panel-body
+          //-                           visualizator-graphic-data(chart="{{chartType}}")
+          //-           .col-xs-12.col-md-6.col-lg-6
+          //-             .hpanel.hred
+          //-               .panel-heading
+          //-                 i.fa.fa-magic
+          //-                 &nbsp;
+          //-                 | Graph effects
+          //-               | 
+          //-               .panel-body
+          //-                 visualizator-graphic-options(chart="{{chartType}}")
