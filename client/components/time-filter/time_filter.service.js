@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('thedashboardApp')
-  .factory('TimeFilter', function ($rootScope) {
+  .factory('TimeFilter', function ($rootScope, $location) {
     function dateMinutesAgo(minutes) {
       var now = new Date().getTime();
       return new Date(now - minutes * 60000);
     }
     return {
+
       observerCallbacks: {},
       registerObserver: function(name, callback) {
         if (!this.observerCallbacks[name]) {
@@ -16,7 +17,7 @@ angular.module('thedashboardApp')
       },
       notifyObservers: function (name) {
         _.each(this.observerCallbacks[name], function(cb) {
-          cb();          
+          cb();
         })
       },
       isVisible: false,
@@ -58,7 +59,9 @@ angular.module('thedashboardApp')
             to: function() {
               return new Date();
             }
-          },
+          }
+        ],
+        [
           {
             name: 'Last 30 minutes',
             from: function() {
@@ -67,7 +70,9 @@ angular.module('thedashboardApp')
             to: function() {
               return new Date();
             }
-          },
+          }
+        ],
+        [
           {
             name: 'Last 1 hour',
             from: function() {
@@ -76,7 +81,9 @@ angular.module('thedashboardApp')
             to: function() {
               return new Date();
             }
-          },
+          }
+        ],
+        [
           {
             name: 'Last 4 hours',
             from: function() {
@@ -96,67 +103,13 @@ angular.module('thedashboardApp')
             to: function() {
               return new Date();
             }
-          },
-          {
-            name: 'Last 24 hours',
-            from: function() {
-              return dateMinutesAgo(60 * 24);
-            },
-            to: function() {
-              return new Date();
-            }
-          },
-          {
-            name: 'Last 7 days',
-            from: function() {
-              return dateMinutesAgo(60 * 24 * 7);
-            },
-            to: function() {
-              return new Date();
-            }
-          },
-          {
-            name: 'Last 30 days',
-            from: function() {
-              return dateMinutesAgo(60 * 24 * 30);
-            },
-            to: function() {
-              return new Date();
-            }
           }
         ],
         [
           {
-            name: 'Last 60 days',
+            name: 'Last 24 hours',
             from: function() {
-              return dateMinutesAgo(60 * 24 * 60);
-            },
-            to: function() {
-              return new Date();
-            }
-          },
-          {
-            name: 'Last 90 days',
-            from: function() {
-              return dateMinutesAgo(60 * 24 * 90);
-            },
-            to: function() {
-              return new Date();
-            }
-          },
-          {
-            name: 'Last 6 months',
-            from: function() {
-              return dateMinutesAgo(60 * 24 * 180);
-            },
-            to: function() {
-              return new Date();
-            }
-          },
-          {
-            name: 'Last 1 year',
-            from: function() {
-              return dateMinutesAgo(60 * 24 * 365);
+              return dateMinutesAgo(60 * 24);
             },
             to: function() {
               return new Date();

@@ -25,19 +25,19 @@ angular.module('thedashboardApp')
   .controller('VisualizationOpenCtrl', function ($scope, $rootScope, $cacheFactory, Plugin, $http, $injector, Settings) {
     $rootScope.sectionName = "Visualizations";
     $rootScope.sectionDescription = "Open a visualization";
-    
+
     getPlugins();
 
     function getPlugins() {
       $scope.plugins = {};
-    
+
       var pluginsAcquisitorPromise = Plugin.broker('getAcquisitorPlugins');
       pluginsAcquisitorPromise.then(function(acquisitorPlugins) {
         $scope.visualizatorService = Plugin.getVisualizatorInstance();
         getVisualizations();
       });
     }
-    
+
     function getVisualizations() {
       var settingsPromise = Settings.broker('visualizations', 'getData', {});
       settingsPromise.then(function(visualizations) {
@@ -83,7 +83,7 @@ angular.module('thedashboardApp')
     };
 
   })
-  .controller('VisualizationEditorTabController', function ($scope, $timeout, $stateParams, queryService, socket, Settings, VisualizationService, Plugin) {
+  .controller('VisualizationEditorTabController', function ($scope, $timeout, $stateParams, queryService, socket, Settings, VisualizationService, Plugin, TimeFilter) {
     $scope.form = {};
     $scope.form.fields = {};
     $scope.form.chartType = $scope.$parent.chartType;
@@ -118,6 +118,9 @@ angular.module('thedashboardApp')
 
     $scope.runVisualization = function() {
       var chart = $scope.$parent.chart;
+
+      $scope.form.time = { from: TimeFilter.from(), to:TimeFilter.to() }
+      
       queryService.createTask(
         'query',
         'visualization',

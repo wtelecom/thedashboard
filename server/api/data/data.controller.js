@@ -8,6 +8,7 @@ var _ = require('lodash'),
   Plugin = require('../../plugins'),
   VisualizationModel = require('./visualization.model'),
   DashboardModel = require('./dashboard.model'),
+  ReportModel = require('./report.model'),
   DatasourceModel = require('./datasource.model'),
   persistentPlugins = require('../../config/general').persistentPlugins;
 
@@ -105,8 +106,8 @@ exports.visualization = function(req, res) {
         name: req.body.data.name,
         id: data._id,
         time: {
-          to: null,
-          from: null
+          to: req.body.data.json.time.to,
+          from: req.body.data.json.time.from
         },
         query: req.body.data.query
       }
@@ -295,3 +296,43 @@ function handleError(res, err) {
     }
   );
 }
+
+/*
+ * Return all reports filtered by a visualizator and an acquisitor Plugin
+ * Only admin role can get all dashboards
+ * @query: visualizator (optional)
+ * @query: acquisitor (optional)
+ */
+exports.getReports = function(req, res) {
+  if (isAdmin(req.user)) {
+    if (_.isEmpty(req.query)) {
+      ReportModel
+        .find()
+        .populate('visualizations')
+        .exec(function(err, data) {
+          if(err) { return handleError(res, err); }
+          return res.json(201, {response: "ok", data: data});
+        });
+    } else {
+      ReportModel
+      .findOne(req.query)
+      .populate('visualizations')
+      .exec(function(err, data) {
+        if(err) { return handleError(res, err); }
+        return res.json(201, {response: "ok", data: data});
+      });
+    }
+  } else {
+    return res.json(401);
+  }
+};
+
+exports.createReport = function(req, res) {
+  if (req.method == 'POST') {
+    // TODO: Check if request is correct
+    ReportModel.create(req.body.data, function(err, data) {
+      if(err) { return handleError(res, err); }
+      return res.json(201, {response: "ok", data: data});
+    });
+  }
+};

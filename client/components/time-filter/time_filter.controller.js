@@ -1,21 +1,48 @@
 'use strict';
 
 angular.module('thedashboardApp')
-  .controller('TimeFilterController', function ($scope, TimeFilter) {
+  .controller('TimeFilterController', function ($scope, TimeFilter, $state, $location) {
+    $scope.quickLists = TimeFilter.quicks;
+
     TimeFilter.registerObserver('visibility', updateVisibility);
     TimeFilter.registerObserver('quick', updateQuick);
-    
+
+    $scope.$on('$locationChangeStart', function(event) {
+      setModeByUrl();
+    });
+
     $scope.isVisible = false;
+    $scope.now = new Date();
+
+    $scope.absoluteDate = {
+      from: new Date($scope.now.setFullYear($scope.now.getFullYear(), $scope.now.getMonth()-12)),
+      to: new Date()
+    };
+
+    $scope.format = 'YYYY-MM-DD HH:mm:ss.SSS';
+
+    setModeByUrl();
+
     function updateVisibility() {
       $scope.isVisible = TimeFilter.isVisible;
     }
+
     function updateQuick() {
       $scope.quick = TimeFilter.quick;
     }
-    $scope.quickLists = TimeFilter.quicks;
-    TimeFilter.setQuick('quick', $scope.quickLists[0][0]);
 
-    $scope.mode = 'quick';
+    function setModeByUrl(){
+      if($state.includes("main.reports")) {
+        TimeFilter.setAbsolute($scope.absoluteDate);
+        $scope.mode = 'absolute';
+      } else {
+        TimeFilter.setQuick('quick', $scope.quickLists[0][0]);
+        $scope.mode = 'quick';
+      }
+    }
+
+    //TimeFilter.setQuick('quick', $scope.quickLists[0][0]);
+
     $scope.setMode = function(mode) {
       $scope.mode = mode;
     }
@@ -30,16 +57,8 @@ angular.module('thedashboardApp')
       TimeFilter.toogle('visibility');
     }
 
-    $scope.now = new Date();
-    $scope.absoluteDate = {
-      from: $scope.now,
-      to: $scope.now
-    };
-
-    $scope.format = 'YYYY-MM-DD HH:mm:ss.SSS';
-
     $scope.setToNow = function() {
-      $scope.absoluteDate.to = new Date();
+      $scope.absoluteDate.to = $scope.now
     };
 
   });

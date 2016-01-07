@@ -1,13 +1,11 @@
 'use strict';
 
 angular.module('thedashboardApp')
-  .controller('DashboardCtrl', function ($scope, $rootScope, Settings, $modal, Plugin, $injector, socket, queryService, TimeFilter, DashboardService) {
+  .controller('ReportsCtrl', function ($scope, $modal, Plugin, $injector, Settings, queryService, socket, TimeFilter, VisualizationService) {
+
     var charts = {};
     var currentRow = 0;
-
-    $scope.dashboardVisualizations = [];
-    $rootScope.sectionName = "Home";
-    $rootScope.sectionDescription = "Active dashboard";
+    $scope.reportVisualizations = [];
 
     getPlugins();
 
@@ -104,6 +102,7 @@ angular.module('thedashboardApp')
     $scope.animationsEnabled = true;
 
     $scope.openVisualizationModal = function() {
+
       var modalAddInstance = $modal.open({
         animation: $scope.animationsEnabled,
         templateUrl: 'ModalVisualizationOpenContent',
@@ -118,15 +117,14 @@ angular.module('thedashboardApp')
         }
       });
 
+
       modalAddInstance.result.then(function(visualization) {
-        $scope.dashboardVisualizations.push(visualization._id);
-        $scope.items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: visualization._id, name: visualization.name});
+        // $scope.reportVisualizations.push(visualization._id);
         currentRow += 1;
 
-        // TODO get from and to from configuration
         queryService.createTask(
           'query',
-          'check',
+          'report',
           {
             redis: {
               name: visualization.name,
@@ -145,18 +143,22 @@ angular.module('thedashboardApp')
             }
           },
           function(data) {
+            console.log(data);
+            $scope.reportVisualizations.push(data.data.job);
+            $scope.items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: data.data.job, name: visualization.name});
             if (data.response !== 'error') {
               createSocket("query-" + data.data.job, function(data) {
                 console.log("Task %d event received", data.job);
-                queryService.getTaskData(
+                queryService.getData(
                   data.job,
+                  'report',
                   function(taskData) {
                     $scope.visualizatorService.data(taskData.data.visualization);
-                    $scope.visualizatorService.onresize = function(){resize(visualization._id)};
-                    $scope.visualizatorService.bind('#vis-' + visualization._id);
+                    $scope.visualizatorService.onresize = function(){resize(data.job)};
+                    $scope.visualizatorService.bind('#vis-' + data.job);
                     var chart = $scope.visualizatorService.render();
-                    charts[visualization._id] = chart;
-                    resize(visualization._id);
+                    charts[data.job] = chart;
+                    resize(data.job);
                   }
                 );
               });
@@ -169,27 +171,28 @@ angular.module('thedashboardApp')
     $scope.openVisualizationSaveModal = function() {
       var modalSaveInstance = $modal.open({
         animation: $scope.animationsEnabled,
-        templateUrl: 'ModalDashboardSaveContent',
-        controller: 'ModalSaveDashboardInstanceController'
+        templateUrl: 'ModalReportSaveContent',
+        controller: 'ModalSaveReportInstanceController'
       });
 
       modalSaveInstance.result.then(function(data) {
-        // TODO: Check if dashboard is ready to be saved (unique name, etc)
-        if (!_.isEmpty($scope.dashboardVisualizations)) {
+        // TODO: Check if report is ready to be saved (unique name, etc)
+        if (!_.isEmpty($scope.reportVisualizations)) {
           queryService.saveData(
-            'dashboards',
+            'reports',
             {
               name: data,
               visualizatorPlugin: $scope.plugins.visualizatorActive,
               acquisitorPlugin: $scope.plugins.acquisitorActive,
-              visualizations: $scope.dashboardVisualizations,
+              reports: $scope.reportVisualizations,
               matrix: $scope.items,
               time: {
                 from: TimeFilter.from(),
                 to: TimeFilter.to()
-              }
+              },
+              progress: null
             },
-            function(){}
+            function(data) {}
           );
         }
       });
@@ -201,47 +204,53 @@ angular.module('thedashboardApp')
         cb(data);
       });
     }
-
   })
-  .controller('DashboardOpenCtrl', function ($scope, $rootScope, $stateParams, $injector, Settings, DashboardService, Plugin, TimeFilter) {
-    $rootScope.sectionName = "Dashboards";
-    $rootScope.sectionDescription = "Open a dashboard";
+  .controller('ReportsCreateCtrl', function ($scope, $rootScope, $modal) {
+    $rootScope.sectionName = "Reports";
+    $rootScope.sectionDescription = "Create a new Report";
+  })
+  .controller('ReportsOpenCtrl', function ($scope, $rootScope, Plugin, $stateParams, Settings, $location, $injector, ReportService, TimeFilter) {
+    $rootScope.sectionName = "Reports";
+    $rootScope.sectionDescription = "Open a report";
 
-    TimeFilter.registerObserver('quick', updateVis);
+    TimeFilter.registerObserver('absolute', loadVisualizations);
 
-    function updateVis() {
-      // Boolean to set if a dashboard must be shown
-      $scope.selectedDashboard = true;
+    function loadVisualizations() {
+      $scope.selectedReport = true;
 
-      if ($stateParams.id) {
-        $scope.selectedDashboard = false;
-
+      if($stateParams.id) {
+        $scope.selectedReport = false;
         var pluginsAcquisitorPromise = Plugin.broker('getAcquisitorPlugins');
         pluginsAcquisitorPromise.then(function(acquisitorPlugins) {
           var visualizatorService = $injector.get(Plugin.getVisualizator() + "Visualizator");
-          var dashboardPromise = DashboardService.loadDashboardVisualizations($stateParams.id, visualizatorService);
-          dashboardPromise.then(function(items) {
+          var reportPromise = ReportService.loadReportVisualizations($stateParams.id, visualizatorService);
+
+          reportPromise.then(function(items) {
             $scope.items = items;
           });
         });
       } else {
-        var settingsPromise = Settings.broker('dashboards', 'getData', {});
-        settingsPromise.then(function(dashboards) {
-          $scope.dashboards = dashboards;
+
+        var settingsPromise = Settings.broker('reports', 'getData', {});
+        settingsPromise.then(function(reports) {
+          $scope.reports = reports;
         });
       }
-
     }
 
-  })
-  .controller('DashboardCreateCtrl', function ($scope, $rootScope, $modal) {
-    // TODO: Plugin service was refactorized, check changes!
-    $rootScope.sectionName = "Dashboards";
-    $rootScope.sectionDescription = "Create a dashboard";
+    $scope.format = function (date) {
+      var humanFormat = 'MMMM Do YYYY';
+      return moment(date).format(humanFormat)
+    };
+
+    $scope.routeTo = function ( path ) {
+      $location.path( path );
+    };
   })
   .controller('ModalOpenInstanceController', function ($scope, $modalInstance, visualizations, visualizatorService) {
     $scope.visualizations = visualizations;
     $scope.visualizatorService = visualizatorService;
+
     $scope.addVisualization = function(visualization) {
       $scope.cancel(visualization);
     };
@@ -254,9 +263,9 @@ angular.module('thedashboardApp')
       $modalInstance.close(visualization);
     };
   })
-  .controller('ModalSaveDashboardInstanceController', function ($scope, $modalInstance) {
+  .controller('ModalSaveReportInstanceController', function ($scope, $modalInstance) {
     $scope.save = function() {
-      $modalInstance.close($scope.dashboardName);
+      $modalInstance.close($scope.ReportName);
     };
 
     $scope.cancel = function() {

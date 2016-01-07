@@ -1,28 +1,35 @@
 'use strict';
 
 angular.module('thedashboardApp')
-  .service('DashboardService', function DashBoardService($http, socket, $q, queryService, Settings) {
+  .service('DashboardService', function DashBoardService($http, socket, $q, queryService, Settings, TimeFilter, $stateParams, $injector, Plugin) {
     var items = [];
     var currentRow = 0;
     var charts = {};
+
     return {
-      addVisulization: function(visualization, visualizatorService) {
+      addVisualization: function(visualization, visualizatorService) {
         items.push({ sizeX: 12, sizeY: 3, row: currentRow, col: 0, id: visualization._id, name: visualization.name});
         currentRow += 1;
+
+        // TODO get from and to from configuration
         queryService.createTask(
           'query',
           'check',
           {
             redis: {
               name: visualization.name,
-              time: {
-                from: null,
-                to: null
-              },
               id: visualization._id
             },
             mongo: {
               data: visualization.json
+            },
+            time: {
+              from: TimeFilter.from(),
+              to: TimeFilter.to()
+            },
+            config: {
+              from: 24,
+              to: 24
             }
           },
           function(data) {
@@ -80,17 +87,18 @@ angular.module('thedashboardApp')
         }
       },
       loadDashboardVisualizations: function(dashboardId, visualizatorService) {
+        items = [];
         var deferred = $q.defer();
         var settingsPromise = Settings.broker('dashboards', 'getData', {_id: dashboardId});
         var parent = this;
         settingsPromise.then(function(dashboard) {
           _.forEach(dashboard.visualizations, function(visualization) {
-            parent.addVisulization(visualization, visualizatorService);
+            parent.addVisualization(visualization, visualizatorService);
           });
           deferred.resolve(items);
         });
         return deferred.promise;
       }
     }
-    
+
   });

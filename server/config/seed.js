@@ -9,6 +9,7 @@ var User = require('../api/user/user.model');
 var PluginModel = require('../api/data/plugin.model');
 var Dashboard = require('../api/data/dashboard.model');
 var Visualization = require('../api/data/visualization.model');
+var Report = require('../api/data/report.model');
 var _ = require('lodash');
 var pluginsConfig = require('./plugins');
 
@@ -77,6 +78,26 @@ PluginModel.checkAndUpdate(pluginsConfig, function() {
           });
         });
       });
+
+      Report.find({}).remove(function() {
+        var nReports = 12;
+        _.times(nReports, function(i) {
+          Report.create({
+            name: 'Report ' + (i + 1),
+            visualizatorPlugin: visualizators[_.random(visualizators.length - 1)].pluginName,
+            acquisitorPlugin: acquisitors[_.random(acquisitors.length - 1)].pluginName,
+            visualizations: [],
+            matrix: [],
+            time: { from: new Date(), to: new Date()},
+            progress: 100
+          }, function() {
+            if (i == nReports - 1) {
+              console.log('finished populating reports');
+            }
+          });
+        });
+      });
+
     }
   })
 });

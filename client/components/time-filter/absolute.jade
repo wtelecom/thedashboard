@@ -11,6 +11,7 @@ form(ng-submit="selectAbsoluteDates()")
         a.label.label-default.small(ng-click="setToNow()") Set to now
       input(type="text", class="form-control", ng-model="absoluteDate.to", min-date="absoluteDate.from", input-datetime="{{format}}")
       datepicker(ng-model="absoluteDate.to", min-date="absoluteDate.from", show-weeks="false", class="time-filter-datepicker")
+      {{ maxAbsoluteSelectable }}
   div.timepicker-section
     label &nbsp;
     br

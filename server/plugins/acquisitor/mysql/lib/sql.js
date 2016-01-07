@@ -12,14 +12,15 @@ SQLParser.prototype.run = function() {
   inspector = new SQLInspector(this.data, this.query);
 
   inspector.datasource();
-  inspector.fields();  
+  inspector.fields();
   inspector.aggregations();
   inspector.groups();
   inspector.orders();
   inspector.limit();
 
+  inspector.where();
+  
   console.log(this.query.toString());
-
   return this.query.toString();
 };
 
@@ -27,7 +28,7 @@ function SQLInspector(data, query) {
   this.data = data;
   this.query = query;
   var parent = this;
-  
+
   // Set query datasource
   this.datasource = function() {
     if (this.data.datasource) {
@@ -91,5 +92,12 @@ function SQLInspector(data, query) {
     if (this.data.limit) {
       parent.query.limit(this.data.limit);
     }
-  };  
+  };
+
+  // Set query where
+  this.where = function() {
+   if (this.data.time) {
+     parent.query.where('FSW BETWEEN CAST("' + this.data.time.from + '" AS DATETIME) AND CAST("' + this.data.time.to + '" AS DATETIME)');
+   }
+ };
 }

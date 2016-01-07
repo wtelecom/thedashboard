@@ -1,11 +1,10 @@
 
 
-module.exports = visualizationQuery;
+module.exports = taskQuery;
 
 
-function visualizationQuery(parent, queryData, task, cb) {
+function taskQuery(parent, queryData, task, cb) {
 
-  //console.log(queryData);
   var data = {
     visualizatorPluginObj: null,
     VisualizatorPlugin: null,
@@ -16,7 +15,6 @@ function visualizationQuery(parent, queryData, task, cb) {
   // Getting the visualizator plugin
   parent.visualizator.plugin()
   .then(function(dataVisualizator) {
-
     data.visualizatorPluginObj = parent.visualizator.getObject(parent.app.get('plugins'), dataVisualizator);
     // Instantiating Visulazator plugin
     data.VisualizatorPlugin = new (require(data.visualizatorPluginObj.path))();
@@ -42,7 +40,7 @@ function visualizationQuery(parent, queryData, task, cb) {
   })
   // Saving task results in Redis
   .then(function(visualizatorData) {
-    return parent.persistor.saveTaskResults(task, {
+    return parent.persistor.saveReportResults(task, {
       visualization: visualizatorData,
       query: data.query,
       time: data.time

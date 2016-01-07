@@ -106,19 +106,19 @@ div(ui-view="main")
                     span.arrow
                       i.fa.fa-folder-open-o
             li
-              a
+              a(ui-sref="main.reports.open")
                 span.nav-label Reports
                 span.arrow
                   i.fa.fa-tasks
-              ul.nav.nav-second-level
-                li
-                  a(ui-sref-active="active", ui-sref="main.visualization.new") Create
-                    span.arrow
-                      i.fa.fa-plus-square-o       
-                li
-                  a(ui-sref-active="active", ui-sref="main.visualization.open") Open
-                    span.arrow
-                      i.fa.fa-folder-open-o
+              //- ul.nav.nav-second-level
+              //-   li
+              //-     a(ui-sref-active="active", ui-sref="main.visualization.new") Create
+              //-       span.arrow
+              //-         i.fa.fa-plus-square-o
+              //-   li
+              //-     a(ui-sref-active="active", ui-sref="main.visualization.open") Open
+              //-       span.arrow
+              //-         i.fa.fa-folder-open-o
             li
               a(ui-sref='main.settings')
                 span.nav-label Settings

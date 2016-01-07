@@ -3,8 +3,9 @@
 angular.module('thedashboardApp')
   .service('queryService', function ($http, socket) {
     return {
-        // Creates a task in the backend and returns the task id 
+        // Creates a task in the backend and returns the task id
         createTask: function(type, subtype, data, cb) {
+
           $http.post(apiPrefix + '/broker/task', {type: type, subtype: subtype, data: data}).
             success(function(data) {
               if (data.response === "error") { return cb(data); }
@@ -23,7 +24,7 @@ angular.module('thedashboardApp')
             }).
             error(function(err) {
               console.log(err);
-            });  
+            });
         },
         // Set time preferences on Redis
         setTime: function(timeData, cb) {
@@ -45,7 +46,7 @@ angular.module('thedashboardApp')
             }).
             error(function(err) {
               console.log(err);
-            });  
+            });
         },
         // Update any setting data
         updateSetting: function(type, data, cb) {
@@ -59,7 +60,7 @@ angular.module('thedashboardApp')
             }).
             error(function(err) {
               console.log(err);
-            });  
+            });
         },
         // Delete any setting data
         deleteSetting: function(type, id, cb) {
@@ -72,7 +73,7 @@ angular.module('thedashboardApp')
             }).
             error(function(err) {
               console.log(err);
-            });  
+            });
         },
         // Save a data like visualizations, dashboards, etc
         saveData: function(type, data, cb) {
@@ -86,7 +87,7 @@ angular.module('thedashboardApp')
             }).
             error(function(err) {
               console.log(err);
-            });  
+            });
         },
         // Save a data like visualizations, dashboards, etc
         updateData: function(type, data, id, cb) {
@@ -100,7 +101,18 @@ angular.module('thedashboardApp')
             }).
             error(function(err) {
               console.log(err);
-            });  
+            });
+        },
+        // Get the data returned by a task
+        getData: function(id, type, cb) {
+          $http.get(apiPrefix + '/broker/' + type + '/' + id).
+            success(function(data) {
+              if (data.response === "error") { return cb(data); }
+              return cb(data);
+            }).
+            error(function(err) {
+              console.log(err);
+            });
         },
     };
   });
