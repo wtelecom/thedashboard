@@ -18,12 +18,12 @@ div(ui-view="main")
             a.toggle-time-filter(ng-click="toggleTimeFilter()")
               i.fa.fa-clock-o
               span.time-filter {{timeFilterText}}
-          li.dropdown
-            a.dropdown-toggle.label-menu-corner(href='#', data-toggle='dropdown')
+          li.dropdown(uib-dropdown)
+            a.dropdown-toggle.label-menu-corner(href='#', data-toggle='dropdown', uib-dropdown-toggle, id="alerts-icon-bar")
               i.fa.fa-bell-o
               span.label.label-danger 3
             |                     
-            ul.dropdown-menu.hdropdown.notification.animated.flipInX
+            ul.uib-dropdown-menu.dropdown-menu.hdropdown.notification.animated.flipInX(aria-labelledby="alerts-icon-bar")
               li
                 a
                   span.label.label-success NEW

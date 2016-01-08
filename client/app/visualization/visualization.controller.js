@@ -25,19 +25,19 @@ angular.module('thedashboardApp')
   .controller('VisualizationOpenCtrl', function ($scope, $rootScope, $cacheFactory, Plugin, $http, $injector, Settings) {
     $rootScope.sectionName = "Visualizations";
     $rootScope.sectionDescription = "Open a visualization";
-    
+
     getPlugins();
 
     function getPlugins() {
       $scope.plugins = {};
-    
+
       var pluginsAcquisitorPromise = Plugin.broker('getAcquisitorPlugins');
       pluginsAcquisitorPromise.then(function(acquisitorPlugins) {
         $scope.visualizatorService = Plugin.getVisualizatorInstance();
         getVisualizations();
       });
     }
-    
+
     function getVisualizations() {
       var settingsPromise = Settings.broker('visualizations', 'getData', {});
       settingsPromise.then(function(visualizations) {
@@ -88,6 +88,7 @@ angular.module('thedashboardApp')
     $scope.form.fields = {};
     $scope.form.chartType = $scope.$parent.chartType;
     $scope.graphicOptions = {};
+    $scope.visStatus = "";
     var query = null;
 
     getDatasources();
@@ -99,6 +100,26 @@ angular.module('thedashboardApp')
         $scope.currentVisualization = visualization;
       });
     }
+
+    // IMPORTANT: This logic must be in a directive
+    // Vis action icons
+    $scope.toggle = function(action) {
+      if ($scope.visStatus == action) {
+        angular.element('.vis-actions').css('display', 'none');
+        angular.element('.vis-icon-' + action).css('display', 'none');
+        $scope.visStatus = "";
+      } else {
+        angular.element('.vis-actions').css('display', 'none');
+        if ($scope.visStatus) {
+          angular.element('.vis-icon-' + $scope.visStatus).css('display', 'none');
+        }
+        $scope.visStatus = action;
+        $timeout(function() {
+          angular.element('.vis-actions').css('display', '');
+          angular.element('.vis-icon-' + action).css('display', '');
+        }, 10);
+      }
+    };
 
     // Dumb method to emit an event to the directives in order to set a default visualization data
     $scope.$on('visualizatorDirectiveReady', function(event, data) {
