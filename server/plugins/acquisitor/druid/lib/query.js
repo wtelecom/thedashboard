@@ -3,57 +3,102 @@
  */
 
 var Druid = require('druid-query'),
-  _ = require('lodash'),
-  Benchmark = require('./benchmark');
+  Q = require('q'),
+  moment = require('moment'),
+  _ = require('lodash');
 
 
 module.exports = QueryReq;
 
-// Query request object
-function QueryReq(benchmark) {
-  this.query = null;
-  this.benchmark = ((benchmark) ? new Benchmark() : null);
+
+// Druid query object
+function QueryReq(connection) {
+  this.connection = connection;
 }
 
-// Extract all needed key in the query
-QueryReq.prototype.makeQuery = function(connection) {
-  var Query = Druid.Query;
-  var query = new Query(connection, this.query);
-  this.execQuery(connection, query);
-}
-
-QueryReq.prototype.execQuery = function(connection, query) {
-  var parent = this;
-
-  if (this.benchmark) {
-    this.benchmark.startBenchmark();
+// Druid query executor
+QueryReq.prototype.execQuery = function(data) {
+  var parent = this,
+    deferred = Q.defer();
+  // If data object has an "action" property,
+  // the query will be executed in raw mode
+  if (data.action) {
+    switch(data.action) {
+      case "updateDatasources":
+        showTables().then(function(dssResult) {
+          deferred.resolve({
+            rows: dssResult,
+            query: null
+          });
+        });
+        break;
+      case "fieldsFromDatasources":
+        showTables().then(function(dss) {
+          getFields(dss).then(function(fields) {
+            console.log(fields);
+          });
+        });
+        break;
+      default:
+        break;
+    }
+  } else {
+    // Data is parsed only when the results must be represented
+    // Parser.parse(data);
   }
 
-  connection.exec(query, function(err, results) {
-    if (err) {
-      // error reasons:
-      // 1. data source is not served by any known node
-      // 2. query validation error
-      // 3. error from Druid node after executing query
-      console.log(err);
-    } else {
-      // handle results
-      if (parent.benchmark) {
-        parent.benchmark.stopBenchmark();
-        console.info("Druid query has took %d %s to get %d results", parent.benchmark.result(), 'ms', results.length);
+  function showTables() {
+    var defer = Q.defer();
+    parent.connection.reloadList(function(err) {
+      defer.resolve(parent.connection.getDataSources());
+    });
+    return defer.promise;  
+  }
+
+  function getFields(dss) {
+    var defer = Q.defer();
+    var dsCount = dss.length;
+    var dssList = [];
+    _.forEach(dss, function(dataSource) {
+      var fieldsQuery = new Druid.SegmentMetadataQuery();
+      fieldsQuery.dataSource(dataSource);
+      fieldsQuery.interval(moment().subtract(2, 'day').format(), moment().subtract(1, 'day').format());
+      console.log(fieldsQuery);
+      try {
+      parent.connection.exec(fieldsQuery, function(err, results) {
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+        // var dataSourceObject = {
+        //   name: dataSource,
+        //   fields: []
+        // };
+        // if (err) {
+        //   console.log(err);
+        //   dsCount -= 1;
+        // } else {
+        //   var fields = [];
+        //   _.forEach(_.head(results).columns, function(value, key) {
+        //     fields.push({
+        //       name: key,
+        //       type: value
+        //     });
+        //   });
+        //   dataSourceObject.fields = fields;
+        // }
+        // dssList.push(dataSourceObject);
+        // if (dsCount < 1) {
+        //   console.log(dssList);
+        //   defer.resolve();
+        // }
+      });
+      }catch(e){
+        console.log(e);
       }
-    }
-    
-    // Call .end() when finished working with Druid
-    connection.end();
-  });
+    });
+    return defer.promise;
+  }
 
-  connection.on('error', function(err) {
-    // handle client error here
-    console.log(err);
-  });
-}
-
+  return deferred.promise;
+};
 
 
 
