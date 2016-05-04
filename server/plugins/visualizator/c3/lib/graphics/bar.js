@@ -12,54 +12,71 @@ function BarC3(data, raw, promise, types) {
 
 function prepareColumns(raw, data, types) {
   var barData = [];
-  var timeseriesFields = [];
-  _.forEach(raw.datasource.fields, function(field) {
-    // It's neccesary check the data type of acquisitor
-    // e.g.: MySQL - timestamp
-    // e.g.: Phoenix - Timestamp
-    if (types(field.type) === 'timestamp') {
-      timeseriesFields.push(field.name);
-    }
-  });
 
-  _.forEach(raw.fields, function(value, field) {
-    if (_.include(timeseriesFields, field)) {
-    // if (timeseriesField === field) {
-      var formattedDates = [];
-      var tsArray = _.map(data, field);
-      _.forEach(tsArray, function(ts) {
-        var fDate = new Date(ts);
-        formattedDates.push(
-          fDate.getFullYear() + '-' + 
-          (0 + String(fDate.getMonth())).slice(-2) + '-' 
-          + (0 + String(fDate.getDay())).slice(-2) + ' ' 
-          + fDate.getHours() + ':' + fDate.getMinutes() + ':' 
-          + fDate.getSeconds());
+  var dateRegExp = /^\d{4}[\/\-](0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01]).*$/;
+  //Getting query columns from data:
+  var firstRow = data[0];
+  var firstFieldValue = firstRow[Object.keys(firstRow)[0]]
+  if (firstFieldValue.match(dateRegExp)) {
+
+    console.log('Time Series Found');
+
+    var groupTimes = _.groupBy(data, function(row){
+      return row[Object.keys(row)[0]];
+    });
+    var groupColumns = _.groupBy(data, function(row){
+      return row[Object.keys(row)[1]];
+    });
+
+    var timeSeriesX = Object.keys(groupTimes);
+
+    //Black magic:
+
+    //First row, X axis with dates values
+    var firstFieldName = Object.keys(raw.fields)[0];
+    barData.push([firstFieldName].concat(timeSeriesX));
+
+    //Add another row for each different value of the second column:
+    _.forEach(groupColumns, function(columnData, name) {
+      var columnValues = [];
+      //Add one field for each timeSeriesX value:
+      _.forEach(timeSeriesX, function(timeValue) {
+        var timeRow = _.find(columnData, function(row) {
+          return row[Object.keys(row)[0]] == timeValue;
+        });
+        //Third column as the real value (0 if not present for this timeValue):
+        var value = timeRow?timeRow[Object.keys(timeRow)[2]]:0;
+        columnValues.push(value);
       });
-      barData.push([field].concat(formattedDates));
-    } else {
+      barData.push([name].concat(columnValues));
+    });  
+
+  } else {
+
+    _.forEach(raw.fields, function(value, field) {
       barData.push([field].concat(_.map(data, field)));
-    }
-  });
+    });
 
-  _.forEach(raw.aggregations, function(agg) {
-    if (types(agg.field.type) === 'timestamp') {
-      var formattedDates = [];
-      var tsArray = _.map(data, agg.name);
-      _.forEach(tsArray, function(ts) {
-        var fDate = new Date(ts);
-        formattedDates.push(
-          fDate.getFullYear() + '-' + 
-          (0 + String(fDate.getMonth())).slice(-2) + '-' 
-          + (0 + String(fDate.getDay())).slice(-2) + ' ' 
-          + fDate.getHours() + ':' + fDate.getMinutes() + ':' 
-          + fDate.getSeconds());
-      });
-      barData.push([agg.name].concat(formattedDates));
-    } else {
-      barData.push([agg.name].concat(_.map(data, agg.name)));
-    }
-  });
+    _.forEach(raw.aggregations, function(agg) {
+      if (types(agg.field.type) === 'timestamp') {
+        var formattedDates = [];
+        var tsArray = _.map(data, agg.name);
+        _.forEach(tsArray, function(ts) {
+          var fDate = new Date(ts);
+          formattedDates.push(
+            fDate.getFullYear() + '-' + 
+            (0 + String(fDate.getMonth())).slice(-2) + '-' 
+            + (0 + String(fDate.getDay())).slice(-2) + ' ' 
+            + fDate.getHours() + ':' + fDate.getMinutes() + ':' 
+            + fDate.getSeconds());
+        });
+        barData.push([agg.name].concat(formattedDates));
+      } else {
+        barData.push([agg.name].concat(_.map(data, agg.name)));
+      }
+    });
+
+  }
 
   return barData;
 }
@@ -87,7 +104,7 @@ function prepareAxis(raw, graphData, data, types) {
       var xData = {};
       xData.type = 'timeseries';
       xData.tick = {
-        format: '%Y-%m-%d %H:%M:%S',
+        format: '%Y-%m-%d %H',//%Y-%m-%d %H:%M:%S
         rotate: 75
       };
       ((xData) ? axis.x = xData : console.log("No X axis to push"));
@@ -121,7 +138,7 @@ function prepareAxis(raw, graphData, data, types) {
       var yData = {};
       yData.type = 'timeseries';
       yData.tick = {
-        format: '%Y-%m-%d %H:%M:%S',
+        format: '%Y-%m-%d %H', //%Y-%m-%d %H:%M:%S
         rotate: 75
       };
       ((yData) ? axis.y = yData : console.log("No Y axis to push"));
@@ -172,7 +189,7 @@ BarC3.prototype.dataset = function() {
   // Data info
   this.graph.data = {
     type: 'bar',
-    xFormat: '%Y-%m-%d %H:%M:%S',
+    xFormat: '%Y-%m-%d %H', //Previous value: %Y-%m-%d %H:%M:%S
     columns: prepareColumns(this.raw, this.data, this.types)
   }
   

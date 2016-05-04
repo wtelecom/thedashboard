@@ -61,7 +61,7 @@ var plugins = [
       address: 'localhost',
       database: 'thedashboard',
       user: 'root',
-      password: '',
+      password: 'root',
       setup: {
         // Waiting seconds to listen new events
         realtime_delay: [10, 20, 30, 60],

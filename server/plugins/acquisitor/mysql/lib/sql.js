@@ -18,8 +18,12 @@ SQLParser.prototype.run = function() {
   inspector.orders();
   inspector.limit();
 
-  console.log(this.query.toString());
+  //DEBUG TimeSeries Graphs...:
+  // var myQuery = "SELECT DATE_FORMAT(FSW, '%Y-%m-%d %H') AS DATEF, APP, sum(B) AS agg0 FROM FAKEDATA GROUP BY DATEF, APP ORDER BY DATEF ASC, APP LIMIT 100;";
+  // console.log(myQuery);
+  // return myQuery;
 
+  console.log(this.query.toString());
   return this.query.toString();
 };
 
@@ -28,6 +32,8 @@ function SQLInspector(data, query) {
   this.query = query;
   var parent = this;
   
+  //TODO: Check the type of the first field. If it's timestamp, prepare for a TimeSeries query...
+
   // Set query datasource
   this.datasource = function() {
     if (this.data.datasource) {
@@ -39,7 +45,7 @@ function SQLInspector(data, query) {
   this.fields = function() {
     if (this.data.fields) {
       _.forEach(this.data.fields, function(value, key) {
-        parent.query.field(key);
+        parent.query.field(key); 
       });
     }
   };
