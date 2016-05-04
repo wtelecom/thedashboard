@@ -130,6 +130,11 @@
                           td.min(width="1%") 
                             a.btn.btn-danger.btn-xs(ng-click='deleteDashboard(dashboard)')
                               i.glyphicon.glyphicon-trash
+                  .col-xs-12
+                    a.btn.btn-info.btn-xs.pull-right(ui-sref='main.dashboard.create')
+                      i.glyphicon.glyphicon-plus
+                      | &nbsp;
+                      | Create a new dashboard
           tab(heading='Visualizations')           
             .tab-content
               .panel-body
@@ -166,6 +171,11 @@
                           td.min(width="1%") 
                             a.btn.btn-danger.btn-xs(ng-click='deleteVisualization(visualization)')
                               i.glyphicon.glyphicon-trash
+                  .col-xs-12
+                    a.btn.btn-info.btn-xs.pull-right(ui-sref='main.visualization.new')
+                      i.glyphicon.glyphicon-plus
+                      | &nbsp;
+                      | Create a new visualization
           tab(heading='DataSources')           
             .tab-content(ng-controller="SettingsTabDataSourcesController")
               .panel-body
