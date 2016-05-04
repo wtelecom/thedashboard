@@ -1,8 +1,8 @@
 var _ = require('lodash');
 
-module.exports = BarC3;
+module.exports = PieC3;
 
-function BarC3(data, raw, promise, types) {
+function PieC3(data, raw, promise, types) {
   this.graph = {};
   this.data = data;
   this.raw = raw;
@@ -11,7 +11,7 @@ function BarC3(data, raw, promise, types) {
 }
 
 function prepareColumns(raw, data, types) {
-  var barData = [];
+  var pieData = [];
   var timeseriesFields = [];
   _.forEach(raw.datasource.fields, function(field) {
     // It's neccesary check the data type of acquisitor
@@ -36,9 +36,9 @@ function prepareColumns(raw, data, types) {
           + fDate.getHours() + ':' + fDate.getMinutes() + ':' 
           + fDate.getSeconds());
       });
-      barData.push([field].concat(formattedDates));
+      pieData.push([field].concat(formattedDates));
     } else {
-      barData.push([field].concat(_.map(data, field)));
+      pieData.push([field].concat(_.map(data, field)));
     }
   });
 
@@ -55,13 +55,13 @@ function prepareColumns(raw, data, types) {
           + fDate.getHours() + ':' + fDate.getMinutes() + ':' 
           + fDate.getSeconds());
       });
-      barData.push([agg.name].concat(formattedDates));
+      pieData.push([agg.name].concat(formattedDates));
     } else {
-      barData.push([agg.name].concat(_.map(data, agg.name)));
+      pieData.push([agg.name].concat(_.map(data, agg.name)));
     }
   });
 
-  return barData;
+  return pieData;
 }
 
 function prepareAxis(raw, graphData, data, types) {
@@ -168,7 +168,7 @@ function prepareFields(raw, types) {
   return fields;
 }
 
-BarC3.prototype.dataset = function() {
+PieC3.prototype.dataset = function() {
   // Data info
   this.graph.data = {
     type: 'pie',

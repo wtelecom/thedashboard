@@ -55,7 +55,7 @@ var plugins = [
   {
     name: 'acquisitor',
     pluginName: 'mysql',
-    pluginTitle: 'MySQL',
+    pluginTitle: 'Druid',
     active: true,
     config: {
       address: 'localhost',
