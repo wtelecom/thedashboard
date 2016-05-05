@@ -11,21 +11,31 @@ function AreaC3(data, raw, promise, types) {
 }
 
 function prepareColumns(raw, data, types) {
-  var areaData = [];
+  var graphData = [];
 
-  var dateRegExp = /^\d{4}[\/\-](0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01]).*$/;
   //Getting query columns from data:
   var firstRow = data[0];
-  var firstFieldValue = firstRow[Object.keys(firstRow)[0]]
-  if (firstFieldValue.match(dateRegExp)) {
+  var fields = Object.keys(data[0]);
+  var tsDateIndex = fields.indexOf('TimeSeriesDateField');
+  console.log(fields)
+  
+  if (tsDateIndex !== -1) {
+    var tsValueIndex = fields.indexOf('agg0');
+    var tsGroupIndex = _.find([0, 1, 2], function(i){
+      return i !== tsDateIndex && i !== tsValueIndex;
+    });
 
     console.log('Time Series Found');
 
+    //tsDateIndex: Index for Time axis...
+    //tsGroupIndex: Index for the field to group to
+    //tsValueIndex: Index for the field with the value
+
     var groupTimes = _.groupBy(data, function(row){
-      return row[Object.keys(row)[0]];
+      return row[Object.keys(row)[tsDateIndex]];
     });
     var groupColumns = _.groupBy(data, function(row){
-      return row[Object.keys(row)[1]];
+      return row[Object.keys(row)[tsGroupIndex]];
     });
 
     var timeSeriesX = Object.keys(groupTimes);
@@ -33,8 +43,8 @@ function prepareColumns(raw, data, types) {
     //Black magic:
 
     //First row, X axis with dates values
-    var firstFieldName = Object.keys(raw.fields)[0];
-    areaData.push([firstFieldName].concat(timeSeriesX));
+    var firstFieldName = Object.keys(raw.fields)[tsDateIndex];
+    graphData.push([firstFieldName].concat(timeSeriesX));
 
     //Add another row for each different value of the second column:
     _.forEach(groupColumns, function(columnData, name) {
@@ -42,19 +52,19 @@ function prepareColumns(raw, data, types) {
       //Add one field for each timeSeriesX value:
       _.forEach(timeSeriesX, function(timeValue) {
         var timeRow = _.find(columnData, function(row) {
-          return row[Object.keys(row)[0]] == timeValue;
+          return row[Object.keys(row)[tsDateIndex]] == timeValue;
         });
         //Third column as the real value (0 if not present for this timeValue):
-        var value = timeRow?timeRow[Object.keys(timeRow)[2]]:0;
+        var value = timeRow?timeRow[Object.keys(timeRow)[tsValueIndex]]:0;
         columnValues.push(value);
       });
-      areaData.push([name].concat(columnValues));
+      graphData.push([name].concat(columnValues));
     });  
 
   } else {
 
     _.forEach(raw.fields, function(value, field) {
-      areaData.push([field].concat(_.map(data, field)));
+      graphData.push([field].concat(_.map(data, field)));
     });
 
     _.forEach(raw.aggregations, function(agg) {
@@ -70,15 +80,15 @@ function prepareColumns(raw, data, types) {
             + fDate.getHours() + ':' + fDate.getMinutes() + ':' 
             + fDate.getSeconds());
         });
-        areaData.push([agg.name].concat(formattedDates));
+        graphData.push([agg.name].concat(formattedDates));
       } else {
-        areaData.push([agg.name].concat(_.map(data, agg.name)));
+        graphData.push([agg.name].concat(_.map(data, agg.name)));
       }
     });
 
   }
 
-  return areaData;
+  return graphData;
 }
 
 function prepareAxis(raw, graphData, data, types) {

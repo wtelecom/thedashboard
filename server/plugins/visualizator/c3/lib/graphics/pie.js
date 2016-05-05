@@ -180,6 +180,5 @@ PieC3.prototype.dataset = function() {
   this.graph.fields = prepareFields(this.raw, this.types);
 
   // Returns the graph data
-  console.log(this.graph);
   this.promise.resolve(this.graph);
 }

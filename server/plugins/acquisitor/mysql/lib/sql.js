@@ -51,7 +51,7 @@ function SQLInspector(data, query) {
     if (this.data.fields) {
       _.forEach(this.data.fields, function(value, key) {
         if (timeSeries && timeSeries.name === key) {
-          parent.query.field('DATE_FORMAT(' + key + ', "%Y-%m-%d %H") AS DATEF');
+          parent.query.field('DATE_FORMAT(' + key + ', "%Y-%m-%d %H") AS TimeSeriesDateField');
         } else {
           parent.query.field(key); 
         }
@@ -79,7 +79,7 @@ function SQLInspector(data, query) {
           } else {
             switch(group.field.type) {
               case 'timestamp':
-                parent.query.group('DATEF');
+                parent.query.group('TimeSeriesDateField');
                 break;
               default:
                 parent.query.group(group.field.name);
