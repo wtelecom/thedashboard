@@ -58,7 +58,6 @@ angular.module('thedashboardApp')
       },
       stack: function(option) {
         if (Boolean(parseInt(option))) {
-          console.log(graph);
           try {
             if (graph.axis.x.type === "timeseries") {
               var columns = _.map(graph.data.columns, function(column) {

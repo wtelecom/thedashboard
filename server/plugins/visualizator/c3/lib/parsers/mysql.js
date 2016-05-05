@@ -17,12 +17,19 @@ MysqlC3Parser.prototype.rawParser = function() {
       case 'bar':
         var graph = new (require('../graphics/' + this.raw.chartType))(this.data, this.raw, this.promise, typesFn.types);
         graph.dataset();
+        break;
       case 'area':
         var graph = new (require('../graphics/' + this.raw.chartType))(this.data, this.raw, this.promise, typesFn.types);
         graph.dataset();
+        break;
       case 'pie':
         var graph = new (require('../graphics/' + this.raw.chartType))(this.data, this.raw, this.promise, typesFn.types);
         graph.dataset();
+        break;
+      case 'line':
+        var graph = new (require('../graphics/' + this.raw.chartType))(this.data, this.raw, this.promise, typesFn.types);
+        graph.dataset();
+        break;
       default:
         break;
     }
