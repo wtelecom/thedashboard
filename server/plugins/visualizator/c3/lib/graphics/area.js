@@ -1,4 +1,6 @@
 var _ = require('lodash');
+//...prepareColumns
+var common = require('./common.js');
 
 module.exports = AreaC3;
 
@@ -8,86 +10,6 @@ function AreaC3(data, raw, promise, types) {
   this.raw = raw;
   this.types = types;
   this.promise = promise;
-}
-
-function prepareColumns(raw, data, types) {
-  var graphData = [];
-
-  //Getting query columns from data:
-  var firstRow = data[0];
-  var fields = Object.keys(data[0]);
-  var tsDateIndex = fields.indexOf('TimeSeriesDateField');
-  
-  if (tsDateIndex !== -1) {
-    var tsValueIndex = fields.indexOf(raw.aggregations[0].name);
-    var tsGroupIndex = _.find([0, 1, 2], function(i){
-      return i !== tsDateIndex && i !== tsValueIndex;
-    });
-
-    console.log('Time Series Found');
-
-    //tsDateIndex: Index for Time axis...
-    //tsGroupIndex: Index for the field to group to
-    //tsValueIndex: Index for the field with the value
-
-    var groupTimes = _.groupBy(data, function(row){
-      return row[Object.keys(row)[tsDateIndex]];
-    });
-    var groupColumns = _.groupBy(data, function(row){
-      return row[Object.keys(row)[tsGroupIndex]];
-    });
-
-    var timeSeriesX = Object.keys(groupTimes);
-
-    //Black magic:
-
-    //First row, X axis with dates values
-    var firstFieldName = Object.keys(raw.fields)[tsDateIndex];
-    graphData.push([firstFieldName].concat(timeSeriesX));
-
-    //Add another row for each different value of the second column:
-    _.forEach(groupColumns, function(columnData, name) {
-      var columnValues = [];
-      //Add one field for each timeSeriesX value:
-      _.forEach(timeSeriesX, function(timeValue) {
-        var timeRow = _.find(columnData, function(row) {
-          return row[Object.keys(row)[tsDateIndex]] == timeValue;
-        });
-        //Third column as the real value (0 if not present for this timeValue):
-        var value = timeRow?timeRow[Object.keys(timeRow)[tsValueIndex]]:0;
-        columnValues.push(value);
-      });
-      graphData.push([name].concat(columnValues));
-    });  
-
-  } else {
-
-    _.forEach(raw.fields, function(value, field) {
-      graphData.push([field].concat(_.map(data, field)));
-    });
-
-    _.forEach(raw.aggregations, function(agg) {
-      if (types(agg.field.type) === 'timestamp') {
-        var formattedDates = [];
-        var tsArray = _.map(data, agg.name);
-        _.forEach(tsArray, function(ts) {
-          var fDate = new Date(ts);
-          formattedDates.push(
-            fDate.getFullYear() + '-' + 
-            (0 + String(fDate.getMonth())).slice(-2) + '-' 
-            + (0 + String(fDate.getDay())).slice(-2) + ' ' 
-            + fDate.getHours() + ':' + fDate.getMinutes() + ':' 
-            + fDate.getSeconds());
-        });
-        graphData.push([agg.name].concat(formattedDates));
-      } else {
-        graphData.push([agg.name].concat(_.map(data, agg.name)));
-      }
-    });
-
-  }
-
-  return graphData;
 }
 
 function prepareAxis(raw, graphData, data, types) {
@@ -198,7 +120,7 @@ AreaC3.prototype.dataset = function() {
   this.graph.data = {
     type: 'area-spline',
     xFormat: '%Y-%m-%d %H', //Previous value: %Y-%m-%d %H:%M:%S
-    columns: prepareColumns(this.raw, this.data, this.types)
+    columns: common.prepareColumns(this.raw, this.data, this.types)
   }
   
   if (this.raw.graph.x)

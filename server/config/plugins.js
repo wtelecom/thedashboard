@@ -59,7 +59,7 @@ var plugins = [
     active: true,
     config: {
       address: 'localhost',
-      database: 'thedashboard',
+      database: 'cisco',
       user: 'root',
       password: 'root',
       setup: {
