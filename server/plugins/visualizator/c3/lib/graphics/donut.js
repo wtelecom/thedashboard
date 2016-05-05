@@ -2,7 +2,7 @@ var _ = require('lodash');
 
 module.exports = DonutC3;
 
-function PieC3(data, raw, promise, types) {
+function DonutC3(data, raw, promise, types) {
   this.graph = {};
   this.data = data;
   this.raw = raw;
@@ -180,6 +180,5 @@ DonutC3.prototype.dataset = function() {
   this.graph.fields = prepareFields(this.raw, this.types);
 
   // Returns the graph data
-  console.log(this.graph);
   this.promise.resolve(this.graph);
 }

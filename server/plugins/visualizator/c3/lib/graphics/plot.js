@@ -15,6 +15,7 @@ function prepareColumns(raw, data, types) {
 
   var dateRegExp = /^\d{4}[\/\-](0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01]).*$/;
   //Getting query columns from data:
+  console.log(data)
   var firstRow = data[0];
   var firstFieldValue = firstRow[Object.keys(firstRow)[0]]
   if (firstFieldValue.match(dateRegExp)) {

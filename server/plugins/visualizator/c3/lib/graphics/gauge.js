@@ -1,6 +1,6 @@
 var _ = require('lodash');
 
-module.exports = DonutC3;
+module.exports = GaugeC3;
 
 function GaugeC3(data, raw, promise, types) {
   this.graph = {};
@@ -11,7 +11,7 @@ function GaugeC3(data, raw, promise, types) {
 }
 
 function prepareColumns(raw, data, types) {
-  var guageData = [];
+  var gaugeData = [];
   var timeseriesFields = [];
   _.forEach(raw.datasource.fields, function(field) {
     // It's neccesary check the data type of acquisitor
@@ -61,7 +61,7 @@ function prepareColumns(raw, data, types) {
     }
   });
 
-  return guageData;
+  return gaugeData;
 }
 
 function prepareAxis(raw, graphData, data, types) {
@@ -180,6 +180,5 @@ GaugeC3.prototype.dataset = function() {
   this.graph.fields = prepareFields(this.raw, this.types);
 
   // Returns the graph data
-  console.log(this.graph);
   this.promise.resolve(this.graph);
 }
