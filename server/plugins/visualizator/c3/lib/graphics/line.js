@@ -113,8 +113,7 @@ function prepareAxis(raw, graphData, data, types) {
       var xData = {};
       xData.type = 'timeseries';
       xData.tick = {
-        format: '%Y-%m-%d %H',//%Y-%m-%d %H:%M:%S
-        rotate: 75
+        format: '%H:%M'
       };
       ((xData) ? axis.x = xData : console.log("No X axis to push"));
     } else if (types(raw.graph.x.field.type) === 'varchar') {

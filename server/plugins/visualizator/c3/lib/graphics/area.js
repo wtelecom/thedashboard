@@ -113,8 +113,7 @@ function prepareAxis(raw, graphData, data, types) {
       var xData = {};
       xData.type = 'timeseries';
       xData.tick = {
-        format: '%Y-%m-%d %H:%M:%S',
-        rotate: 75
+        format: '%H:%M'
       };
       ((xData) ? axis.x = xData : console.log("No X axis to push"));
     } else if (types(raw.graph.x.field.type) === 'varchar') {
@@ -197,7 +196,7 @@ function prepareFields(raw, types) {
 AreaC3.prototype.dataset = function() {
   // Data info
   this.graph.data = {
-    type: 'area',
+    type: 'area-spline',
     xFormat: '%Y-%m-%d %H', //Previous value: %Y-%m-%d %H:%M:%S
     columns: prepareColumns(this.raw, this.data, this.types)
   }
