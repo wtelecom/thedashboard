@@ -127,6 +127,40 @@ angular.module('thedashboardApp')
       }
     };
   })
+  .directive('visualizatorGraphicDataGaugeC3', function () {
+    return {
+      restrict: 'E',
+      scope: false,
+      link: function (scope, element, attrs) {
+        // Emits a signal in order to inform to the controller about their availability
+        scope.$emit('visualizatorDirectiveReady');
+      }
+    };
+  })
+  .directive('visualizatorGraphicOptionsGaugeC3', function (Plugin) {
+    return {
+      restrict: 'E',
+      scope: false,
+      link: function (scope, element, attrs) {
+        scope.$on('currentVisualizationSetted', function(event, visualization) {
+          if (visualization) {
+            // Setting graphic options
+            scope.graphicOptions = visualization.graphicOptions;
+          }
+        });
+
+        scope.changeGraphicOptions = function(options, model) {
+          scope.visualizatorService.option(options, model, scope.chart); 
+          if (options.restart) {
+            scope.chart = scope.visualizatorService.render();
+          }
+        };
+
+        // Emits a signal in order to inform to the controller about their availability
+        scope.$emit('visualizatorDirectiveReady');
+      }
+    };
+  })
   .directive('visualizatorGraphicDataPieC3', function () {
     return {
       restrict: 'E',
@@ -138,6 +172,74 @@ angular.module('thedashboardApp')
     };
   })
   .directive('visualizatorGraphicOptionsPieC3', function (Plugin) {
+    return {
+      restrict: 'E',
+      scope: false,
+      link: function (scope, element, attrs) {
+        scope.$on('currentVisualizationSetted', function(event, visualization) {
+          if (visualization) {
+            // Setting graphic options
+            scope.graphicOptions = visualization.graphicOptions;
+          }
+        });
+
+        scope.changeGraphicOptions = function(options, model) {
+          scope.visualizatorService.option(options, model, scope.chart); 
+          if (options.restart) {
+            scope.chart = scope.visualizatorService.render();
+          }
+        };
+
+        // Emits a signal in order to inform to the controller about their availability
+        scope.$emit('visualizatorDirectiveReady');
+      }
+    };
+  })
+  .directive('visualizatorGraphicDataPlotC3', function () {
+    return {
+      restrict: 'E',
+      scope: false,
+      link: function (scope, element, attrs) {
+        // Emits a signal in order to inform to the controller about their availability
+        scope.$emit('visualizatorDirectiveReady');
+      }
+    };
+  })
+  .directive('visualizatorGraphicOptionsPlotC3', function (Plugin) {
+    return {
+      restrict: 'E',
+      scope: false,
+      link: function (scope, element, attrs) {
+        scope.$on('currentVisualizationSetted', function(event, visualization) {
+          if (visualization) {
+            // Setting graphic options
+            scope.graphicOptions = visualization.graphicOptions;
+          }
+        });
+
+        scope.changeGraphicOptions = function(options, model) {
+          scope.visualizatorService.option(options, model, scope.chart); 
+          if (options.restart) {
+            scope.chart = scope.visualizatorService.render();
+          }
+        };
+
+        // Emits a signal in order to inform to the controller about their availability
+        scope.$emit('visualizatorDirectiveReady');
+      }
+    };
+  })
+  .directive('visualizatorGraphicDataDonutC3', function () {
+    return {
+      restrict: 'E',
+      scope: false,
+      link: function (scope, element, attrs) {
+        // Emits a signal in order to inform to the controller about their availability
+        scope.$emit('visualizatorDirectiveReady');
+      }
+    };
+  })
+  .directive('visualizatorGraphicOptionsDonutC3', function (Plugin) {
     return {
       restrict: 'E',
       scope: false,

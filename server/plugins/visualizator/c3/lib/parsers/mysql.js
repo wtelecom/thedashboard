@@ -30,6 +30,18 @@ MysqlC3Parser.prototype.rawParser = function() {
         var graph = new (require('../graphics/' + this.raw.chartType))(this.data, this.raw, this.promise, typesFn.types);
         graph.dataset();
         break;
+      case 'plot':
+        var graph = new (require('../graphics/' + this.raw.chartType))(this.data, this.raw, this.promise, typesFn.types);
+        graph.dataset();
+        break;
+      case 'donut':
+        var graph = new (require('../graphics/' + this.raw.chartType))(this.data, this.raw, this.promise, typesFn.types);
+        graph.dataset();
+        break;
+      case 'gauge':
+        var graph = new (require('../graphics/' + this.raw.chartType))(this.data, this.raw, this.promise, typesFn.types);
+        graph.dataset();
+        break;
       default:
         break;
     }
