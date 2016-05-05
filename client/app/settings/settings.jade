@@ -1,5 +1,5 @@
 .row
-  .col-xs-12.col-md-9.col-lg-9.animated-panel.zoomIn(style='animation-delay: 0.4s; -webkit-animation-delay: 0.4s;')
+  .col-xs-12.col-md-12.col-lg-12.animated-panel.zoomIn(style='animation-delay: 0.4s; -webkit-animation-delay: 0.4s;')
     .hpanel
       div(ng-controller="SettingsTabController")
         tabset
@@ -13,12 +13,30 @@
                         .panel-tools
                           a.showhide
                             i.fa.fa-chevron-up
-                        | Site data
+                        | Sections data
                       |             
                       .panel-body
                         .form-group
-                          label.control-label Site title
-                          input.form-control.m-b(type="text", placeholder="Dashboard")
+                          label.control-label Hub metrics
+                          select.form-control.m-b
+                            option(value="1") Dashboard 1
+                            option(value="2") Dashboard 2
+                            option(value="3", selected) Dashboard 3
+                          label.control-label Link metrics
+                          select.form-control.m-b
+                            option(value="1", selected) Dashboard 1
+                            option(value="2") Dashboard 2
+                            option(value="3") Dashboard 3
+                          label.control-label Flow analysis
+                          select.form-control.m-b
+                            option(value="1") Dashboard 1
+                            option(value="2", selected) Dashboard 2
+                            option(value="3") Dashboard 3
+                          label.control-label System metrics
+                          select.form-control.m-b
+                            option(value="1", selected) Dashboard 1
+                            option(value="2") Dashboard 2
+                            option(value="3") Dashboard 3
           tab(heading='Plugins')            
             .tab-content
               tab-pane
@@ -212,65 +230,65 @@
                       a.btn.btn-info.btn-outline.btn-margin(ng-click="updateDatasources()")
                         i.fa.fa-refresh
                         | &nbsp; Update data
-          tab(heading='ACLs')           
-            .tab-content
-              .panel-body
-                .row
-                  .col-xs-12
-  .col-md-3.col-lg-3.col-xs-12
-    .row
-      .col-md-12.col-lg-12.col-xs-12.animated-panel.zoomIn(style='animation-delay: 0.9s; -webkit-animation-delay: 0.9s;')
-        .hpanel.hbgblue
-            .panel-body
-              .text-center
-                h3 Dashboards
-                |                             
-                p.text-big.font-light
-                  | 160
-                |                             
-                small
-                  | Dashboards available
-                br
-                a.btn.btn-default.btn-xs.btn-outline(style="margin-top: 5px;") See all dashboards
-      .col-md-12.col-lg-12.col-xs-12.animated-panel.zoomIn(style='animation-delay: 0.9s; -webkit-animation-delay: 0.9s;')
-        .hpanel.hbggreen
-            .panel-body
-              .text-center
-                h3 Visualizations
-                |                             
-                p.text-big.font-light
-                  | 547
-                |                             
-                small
-                  | Visualizations available
-                br
-                a.btn.btn-default.btn-xs.btn-outline(style="margin-top: 5px;") See all visualizations
-      .col-md-12.col-lg-12.col-xs-12.animated-panel.zoomIn(style='animation-delay: 1.3s; -webkit-animation-delay: 1.3s;')
-        .hpanel
-            .panel-body
-              .table-responsive
-                table.table.table-striped
-                  thead
-                    tr
-                      th Alert
-                      |                                     
-                      th Date
-                  |                                 
-                  tbody
-                    tr
-                      td
-                        span.text-danger.font-bold Lorem ipsum
-                      |                                     
-                      td Jul 14, 2015
-                    |                                 
-                    tr
-                      td
-                        span.text-danger.font-bold Lorem ipsum
-                      |                                     
-                      td Jul 09, 2015
-                    |                                 
-                    tr
-                      td
-                        span.text-danger.font-bold Lorem ipsum
-                      |                                     
-                      td Jul 02, 2015
+          //- tab(heading='ACLs')           
+          //-   .tab-content
+          //-     .panel-body
+          //-       .row
+          //-         .col-xs-12
+  //- .col-md-3.col-lg-3.col-xs-12
+  //-   .row
+  //-     .col-md-12.col-lg-12.col-xs-12.animated-panel.zoomIn(style='animation-delay: 0.9s; -webkit-animation-delay: 0.9s;')
+  //-       .hpanel.hbgblue
+  //-           .panel-body
+  //-             .text-center
+  //-               h3 Dashboards
+  //-               |                             
+  //-               p.text-big.font-light
+  //-                 | 160
+  //-               |                             
+  //-               small
+  //-                 | Dashboards available
+  //-               br
+  //-               a.btn.btn-default.btn-xs.btn-outline(style="margin-top: 5px;") See all dashboards
+  //-     .col-md-12.col-lg-12.col-xs-12.animated-panel.zoomIn(style='animation-delay: 0.9s; -webkit-animation-delay: 0.9s;')
+  //-       .hpanel.hbggreen
+  //-           .panel-body
+  //-             .text-center
+  //-               h3 Visualizations
+  //-               |                             
+  //-               p.text-big.font-light
+  //-                 | 547
+  //-               |                             
+  //-               small
+  //-                 | Visualizations available
+  //-               br
+  //-               a.btn.btn-default.btn-xs.btn-outline(style="margin-top: 5px;") See all visualizations
+  //-     .col-md-12.col-lg-12.col-xs-12.animated-panel.zoomIn(style='animation-delay: 1.3s; -webkit-animation-delay: 1.3s;')
+  //-       .hpanel
+  //-           .panel-body
+  //-             .table-responsive
+  //-               table.table.table-striped
+  //-                 thead
+  //-                   tr
+  //-                     th Alert
+  //-                     |                                     
+  //-                     th Date
+  //-                 |                                 
+  //-                 tbody
+  //-                   tr
+  //-                     td
+  //-                       span.text-danger.font-bold Lorem ipsum
+  //-                     |                                     
+  //-                     td Jul 14, 2015
+  //-                   |                                 
+  //-                   tr
+  //-                     td
+  //-                       span.text-danger.font-bold Lorem ipsum
+  //-                     |                                     
+  //-                     td Jul 09, 2015
+  //-                   |                                 
+  //-                   tr
+  //-                     td
+  //-                       span.text-danger.font-bold Lorem ipsum
+  //-                     |                                     
+  //-                     td Jul 02, 2015

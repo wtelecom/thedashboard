@@ -14,30 +14,25 @@ div(ui-view="main")
       |         
       .navbar-right
         ul.nav.navbar-nav.no-borders
-          li
-            a.toggle-time-filter(ng-click="toggleTimeFilter()")
-              i.fa.fa-clock-o
-              span.time-filter {{timeFilterText}}
+          //- li
+          //-   a.toggle-time-filter(ng-click="toggleTimeFilter()")
+          //-     i.fa.fa-clock-o
+          //-     span.time-filter {{timeFilterText}}
           li.dropdown(uib-dropdown)
             a.dropdown-toggle.label-menu-corner(href='#', data-toggle='dropdown', uib-dropdown-toggle, id="alerts-icon-bar")
               i.fa.fa-bell-o
-              span.label.label-danger 3
+              span.label.label-danger 2
             |                     
             ul.uib-dropdown-menu.dropdown-menu.hdropdown.notification.animated.flipInX(aria-labelledby="alerts-icon-bar")
               li
                 a
-                  span.label.label-success NEW
-                  |  It is a long established.
+                  span.label.label-danger ERR
+                  |  SQUADA-01-ES01 down
               |                         
               li
                 a
                   span.label.label-warning WAR
-                  |  There are many variations.
-              |                         
-              li
-                a
-                  span.label.label-danger ERR
-                  |  Contrary to popular belief.
+                  |  WSC-122-ES17 Hub unreachable
               |                         
               li.summary
                 a(href='#') See all alerts
