@@ -19,7 +19,6 @@ SQLParser.prototype.run = function() {
   inspector.limit();
 
   console.log(this.query.toString());
-
   return this.query.toString();
 };
 
@@ -28,6 +27,18 @@ function SQLInspector(data, query) {
   this.query = query;
   var parent = this;
   
+  //TODO: Check the type of the first field. If it's timestamp, prepare for a TimeSeries query...
+  var timeFields = _.filter(this.data.datasource.fields, function(row) {
+    return row.type === 'timestamp';
+  });
+
+  var keys = Object.keys(this.data.fields);
+  
+  var timeSeries = _.find(timeFields, function(row) {
+    return keys.indexOf(row.name) !== -1;
+  });
+  //timeSeries.name...
+
   // Set query datasource
   this.datasource = function() {
     if (this.data.datasource) {
@@ -39,7 +50,11 @@ function SQLInspector(data, query) {
   this.fields = function() {
     if (this.data.fields) {
       _.forEach(this.data.fields, function(value, key) {
-        parent.query.field(key);
+        if (timeSeries && timeSeries.name === key) {
+          parent.query.field('DATE_FORMAT(' + key + ', "%Y-%m-%d %H") AS DATEF');
+        } else {
+          parent.query.field(key); 
+        }
       });
     }
   };
@@ -64,7 +79,7 @@ function SQLInspector(data, query) {
           } else {
             switch(group.field.type) {
               case 'timestamp':
-                parent.query.group('CAST(' + group.field.name + ' AS DATE)');
+                parent.query.group('DATEF');
                 break;
               default:
                 parent.query.group(group.field.name);

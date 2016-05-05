@@ -58,7 +58,19 @@ angular.module('thedashboardApp')
       },
       stack: function(option) {
         if (Boolean(parseInt(option))) {
-          graph.data.groups = [graph.fields];
+          console.log(graph);
+          try {
+            if (graph.axis.x.type === "timeseries") {
+              var columns = _.map(graph.data.columns, function(column) {
+                return column[0];
+              });
+              graph.data.groups = [columns];
+            } else {
+              graph.data.groups = [graph.fields];
+            }
+          } catch(err) {
+            graph.data.groups = [graph.fields];
+          }
         } else {
           graph.data.groups = [];
         }
