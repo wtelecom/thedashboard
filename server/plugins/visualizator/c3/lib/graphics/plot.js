@@ -17,11 +17,9 @@ function prepareColumns(raw, data, types) {
   var firstRow = data[0];
   var fields = Object.keys(data[0]);
   var tsDateIndex = fields.indexOf('TimeSeriesDateField');
-  console.log(fields)
   
   if (tsDateIndex !== -1) {
-    //TODO... Use the aggregation name instead of agg0...
-    var tsValueIndex = fields.indexOf('agg0');
+    var tsValueIndex = fields.indexOf(raw.aggregations[0].name);
     var tsGroupIndex = _.find([0, 1, 2], function(i){
       return i !== tsDateIndex && i !== tsValueIndex;
     });
