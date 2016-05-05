@@ -11,57 +11,17 @@ function DonutC3(data, raw, promise, types) {
 }
 
 function prepareColumns(raw, data, types) {
-  var donutData = [];
-  var timeseriesFields = [];
-  _.forEach(raw.datasource.fields, function(field) {
-    // It's neccesary check the data type of acquisitor
-    // e.g.: MySQL - timestamp
-    // e.g.: Phoenix - Timestamp
-    if (types(field.type) === 'timestamp') {
-      timeseriesFields.push(field.name);
-    }
+  var graphData = [];
+
+  //Each data row must have the aggregation value and the variable...
+  var fields = Object.keys(data[0]);
+  var aggIndex = fields.indexOf(raw.aggregations[0].name);
+  var groupIndex = (aggIndex === 0)?1:0;
+  _.forEach(data, function(row) {
+    graphData.push([row[Object.keys(row)[groupIndex]], row[Object.keys(row)[aggIndex]]]);
   });
 
-  _.forEach(raw.fields, function(value, field) {
-    if (_.include(timeseriesFields, field)) {
-    // if (timeseriesField === field) {
-      var formattedDates = [];
-      var tsArray = _.map(data, field);
-      _.forEach(tsArray, function(ts) {
-        var fDate = new Date(ts);
-        formattedDates.push(
-          fDate.getFullYear() + '-' + 
-          (0 + String(fDate.getMonth())).slice(-2) + '-' 
-          + (0 + String(fDate.getDay())).slice(-2) + ' ' 
-          + fDate.getHours() + ':' + fDate.getMinutes() + ':' 
-          + fDate.getSeconds());
-      });
-      donutData.push([field].concat(formattedDates));
-    } else {
-      donutData.push([field].concat(_.map(data, field)));
-    }
-  });
-
-  _.forEach(raw.aggregations, function(agg) {
-    if (types(agg.field.type) === 'timestamp') {
-      var formattedDates = [];
-      var tsArray = _.map(data, agg.name);
-      _.forEach(tsArray, function(ts) {
-        var fDate = new Date(ts);
-        formattedDates.push(
-          fDate.getFullYear() + '-' + 
-          (0 + String(fDate.getMonth())).slice(-2) + '-' 
-          + (0 + String(fDate.getDay())).slice(-2) + ' ' 
-          + fDate.getHours() + ':' + fDate.getMinutes() + ':' 
-          + fDate.getSeconds());
-      });
-      donutData.push([agg.name].concat(formattedDates));
-    } else {
-      donutData.push([agg.name].concat(_.map(data, agg.name)));
-    }
-  });
-
-  return donutData;
+  return graphData;
 }
 
 function prepareAxis(raw, graphData, data, types) {
