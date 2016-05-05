@@ -120,6 +120,26 @@ div(ui-view="main")
                     span.arrow
                       i.fa.fa-folder-open-o
             li
+              a(ui-sref='main.dashboard.open({id: dashboard._id})')
+                span.nav-label Hub metrics
+                span.arrow
+                  i.fa.fa-wifi
+            li
+              a(ui-sref='main.dashboard.open({id: dashboard._id})')
+                span.nav-label Link metrics
+                span.arrow
+                  i.fa.fa-link
+            li
+              a(ui-sref='main.dashboard.open({id: dashboard._id})')
+                span.nav-label Flow analysis
+                span.arrow
+                  i.fa.fa-code-fork
+            li
+              a(ui-sref='main.dashboard.open({id: dashboard._id})')
+                span.nav-label System metrics
+                span.arrow
+                  i.fa.fa-server
+            li
               a(ui-sref='main.settings')
                 span.nav-label Settings
                 span.arrow
