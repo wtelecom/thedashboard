@@ -59,14 +59,18 @@ angular.module('thedashboardApp')
       stack: function(option) {
         if (Boolean(parseInt(option))) {
           try {
-            if (graph.axis.x.type === "timeseries") {
-              var columns = _.map(graph.data.columns, function(column) {
-                return column[0];
-              });
-              graph.data.groups = [columns];
-            } else {
-              graph.data.groups = [graph.fields];
-            }
+            var columns = _.map(graph.data.columns, function(column) {
+              return column[0];
+            });
+            // if (graph.axis.x.type === "timeseries") {
+            //   var columns = _.map(graph.data.columns, function(column) {
+            //     return column[0];
+            //   });
+            //   graph.data.groups = [columns];
+            // } else {
+            //   graph.data.groups = [graph.fields];
+            // }
+            graph.data.groups = [columns];
           } catch(err) {
             graph.data.groups = [graph.fields];
           }
