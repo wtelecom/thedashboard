@@ -26,6 +26,12 @@ function prepareColumns(raw, data, types) {
       //tsGroupIndex: Index for the field to group to
       //tsValueIndex: Index for the field with the value
       var keys = [tsDateIndex, tsGroupIndex, tsValueIndex];
+    } else {
+      //Getting selected X field for the first group by:
+      var xIndex = fields.indexOf(raw.graph.x.field.name);
+      var gIndex = (xIndex === 1)?0:1;
+
+      var keys = [xIndex, gIndex, 2];
     }
 
     graphData = multiGroups(raw, data, keys);
