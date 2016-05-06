@@ -27,7 +27,7 @@ function SQLInspector(data, query) {
   this.query = query;
   var parent = this;
   
-  //TODO: Check the type of the first field. If it's timestamp, prepare for a TimeSeries query...
+  //Check the type of the first field. If it's timestamp, prepare for a TimeSeries query...
   var timeFields = _.filter(this.data.datasource.fields, function(row) {
     return row.type === 'timestamp';
   });
@@ -52,6 +52,10 @@ function SQLInspector(data, query) {
       _.forEach(this.data.fields, function(value, key) {
         if (timeSeries && timeSeries.name === key) {
           parent.query.field('DATE_FORMAT(' + key + ', "%Y-%m-%d %H") AS TimeSeriesDateField');
+
+          //With date:
+          parent.query.where(key + ' < NOW()');
+
         } else {
           parent.query.field(key); 
         }
