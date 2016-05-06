@@ -116,23 +116,34 @@ function prepareFields(raw, types) {
 }
 
 BarC3.prototype.dataset = function() {
-  // Data info
-  this.graph.data = {
-    type: 'bar',
-    xFormat: '%Y-%m-%d %H', //Previous value: %Y-%m-%d %H:%M:%S
-    columns: common.prepareColumns(this.raw, this.data, this.types)
+  try{
+    // Data info
+    this.graph.data = {
+      type: 'bar',
+      xFormat: '%Y-%m-%d %H', //Previous value: %Y-%m-%d %H:%M:%S
+      columns: common.prepareColumns(this.raw, this.data, this.types)
+    }
+    
+    if (this.raw.graph.x)
+      this.graph.data.x = this.raw.graph.x.field.name;
+
+    // Axis info
+    if (this.raw.graph.x || this.raw.graph.y){
+      this.graph.axis = prepareAxis(this.raw, this.graph.data, this.data, this.types);
+
+      if (this.raw.groups.length > 1 ) {
+        this.graph.axis.x.type = "categories";
+        this.graph.axis.x.categories = this.graph.data.columns[0].slice(1);
+      }
+
+    }
+
+    // Fields info (this is a fake option)
+    this.graph.fields = prepareFields(this.raw, this.types);
+
+    // Returns the graph data
+    this.promise.resolve(this.graph);
+  } catch (err) {
+    console.log(err)
   }
-  
-  if (this.raw.graph.x)
-    this.graph.data.x = this.raw.graph.x.field.name;
-
-  // Axis info
-  if (this.raw.graph.x || this.raw.graph.y)
-    this.graph.axis = prepareAxis(this.raw, this.graph.data, this.data, this.types);
-
-  // Fields info (this is a fake option)
-  this.graph.fields = prepareFields(this.raw, this.types);
-
-  // Returns the graph data
-  this.promise.resolve(this.graph);
 }

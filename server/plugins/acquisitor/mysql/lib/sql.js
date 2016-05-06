@@ -100,7 +100,7 @@ function SQLInspector(data, query) {
     if (this.data.orders) {
       _.forEach(this.data.orders, function(order) {
         if (!_.isEmpty(order))
-          parent.query.order(order.field.name, ((order.type == 'asc') ? true : false));
+          parent.query.order(' "' + order.field.name + '" ', ((order.type == 'asc') ? true : false));
       });
     }
   };

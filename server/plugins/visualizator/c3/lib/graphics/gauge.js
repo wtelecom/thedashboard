@@ -169,16 +169,31 @@ function prepareFields(raw, types) {
 }
 
 GaugeC3.prototype.dataset = function() {
-  // Data info
-  this.graph.data = {
-    type: 'gauge',
-    xFormat: '%Y-%m-%d %H:%M:%S',
-    columns: prepareColumns(this.raw, this.data, this.types)
+  try{
+    var columns = prepareColumns(this.raw, this.data, this.types);
+    console.log(columns)
+    var max = (columns[0][1] * 1.10);
+    
+    // Data info
+    this.graph.data = {
+      type: 'gauge',
+      xFormat: '%Y-%m-%d %H:%M:%S',
+      columns: columns
+    }
+
+    this.graph.gauge = {
+        max: max
+    };
+    this.graph.size = {
+        height: 250
+    };
+
+    // Fields info (this is a fake option)
+    this.graph.fields = prepareFields(this.raw, this.types);
+
+    // Returns the graph data
+    this.promise.resolve(this.graph);
+  } catch (err) {
+    console.log(err)
   }
-
-  // Fields info (this is a fake option)
-  this.graph.fields = prepareFields(this.raw, this.types);
-
-  // Returns the graph data
-  this.promise.resolve(this.graph);
 }
