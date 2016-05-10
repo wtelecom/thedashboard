@@ -55,6 +55,8 @@ function SQLInspector(data, query) {
 
           //With date:
           parent.query.where(key + ' < NOW()');
+          //Lasts rows:
+          parent.query.order(' TimeSeriesDateField ', false);
 
         } else {
           parent.query.field(key); 

@@ -38,14 +38,14 @@ function prepareAxis(raw, graphData, data, types) {
         format: '%H:%M'
       };
       ((xData) ? axis.x = xData : console.log("No X axis to push"));
-    } else if (types(raw.graph.x.field.type) === 'varchar') {
+    } else {//} if (types(raw.graph.x.field.type) === 'varchar') {
       var xData = {};
       xData.type = 'category';
       xData.categories = _.map(data, raw.graph.x.field.name);
       ((xData) ? axis.x = xData : console.log("No X axis to push"));
-    } else {
-      graphData.x = raw.graph.x.field.name;
-    }
+    } // else {
+    //   graphData.x = raw.graph.x.field.name;
+    // }
 
     
   }
