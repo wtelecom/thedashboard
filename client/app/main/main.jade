@@ -1,16 +1,33 @@
 div(ui-view="main")
   #header(ng-controller="HeaderController")
     .color-line
-    #logo.light-version
-      a(ui-sref="main.dashboard") 
-        strong The dashboard
+    #logo.light-version(style="background-image: url('app/main/netpath.png');background-repeat: no-repeat;background-size: 48px;background-position: 4px;padding-left: 83px;")
+      //- a 
+      //-   span NetPath
+      div.dropdown(uib-dropdown, style="height: 36px;")
+        a.dropdown-toggle(href='#', data-toggle='dropdown', uib-dropdown-toggle, id="test-logo")
+          span NetPath
+            b.caret
+        |                     
+        ul.uib-dropdown-menu.dropdown-menu.hdropdown.animated.flipInX(aria-labelledby="test-logo")
+          li
+            a
+              span
+                i.pe.pe-7s-light.fa-lg.text-info(style="padding-right: 10px;")
+                | WeLight
+          |                         
+          li
+            a
+              span
+                i.pe.pe-7s-trash.fa-lg.text-success(style="padding-right: 10px;")
+                | eGarbage
            
     nav(role='navigation')
       .header-link.hide-menu
         i.fa.fa-bars
       |         
       .small-logo
-        span.text-primary The dashboard
+        span.text-primary NetPath
       |         
       .navbar-right
         ul.nav.navbar-nav.no-borders
@@ -20,8 +37,9 @@ div(ui-view="main")
           //-     span.time-filter {{timeFilterText}}
           li.dropdown(uib-dropdown)
             a.dropdown-toggle.label-menu-corner(href='#', data-toggle='dropdown', uib-dropdown-toggle, id="alerts-icon-bar")
-              i.fa.fa-bell-o
-              span.label.label-danger 2
+              //- i.fa.fa-bell-o
+              i.pe-7s-bell
+              span.label.label-success 2
             |                     
             ul.uib-dropdown-menu.dropdown-menu.hdropdown.notification.animated.flipInX(aria-labelledby="alerts-icon-bar")
               li
@@ -36,22 +54,25 @@ div(ui-view="main")
               |                         
               li.summary
                 a(href='#') See all alerts
+          li.dropdown
+            a
+              i.pe-7s-upload.pe-rotate-90
 
   aside#menu(ng-controller="MenuController")
       #navigation
           .profile-picture
             a(href='#')
-              img.img-circle.m-b.img-responsive(src='https://avatars3.githubusercontent.com/u/3762191?v=3&s=460', alt='logo')
+              img.img-circle.m-b.img-responsive(src='app/account/logo.png', alt='logo')
             |             
             .stats-label.text-color
               span.font-extra-bold.font-uppercase {{ user.name }}
               .dropdown
-                a.dropdown-toggle(href='#', data-toggle='dropdown', aria-expanded='false')
+                a.dropdown-toggle(href='#', data-toggle='dropdown', aria-expanded='false', uib-dropdown-toggle, id="test-icon-bar")
                   small.text-muted
                     | Technical manager at WT
                     b.caret
                   |                     
-                ul.dropdown-menu.animated.flipInX.m-t-xs
+                ul.dropdown-menu.animated.flipInX.m-t-xs(aria-labelledby="alerts-icon-bar")
                   li
                     a(href='contacts.html') Contacts
                   |                         
