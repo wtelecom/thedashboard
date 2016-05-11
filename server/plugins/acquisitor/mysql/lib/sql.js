@@ -29,6 +29,11 @@ function SQLInspector(data, query) {
   
   //Check the type of the first field. If it's timestamp, prepare for a TimeSeries query...
   var timeFields = _.filter(this.data.datasource.fields, function(row) {
+    //parent.query.where(key + ' < NOW()');
+    if (row.type === 'timestamp') {
+      parent.query.where(row.name + ' < NOW()');
+      parent.query.where(row.name + ' > DATE_SUB(NOW(), INTERVAL 10 DAY)');
+    }
     return row.type === 'timestamp';
   });
 
@@ -59,7 +64,7 @@ function SQLInspector(data, query) {
           parent.query.order(' TimeSeriesDateField ', false);
 
         } else {
-          parent.query.field(key); 
+          parent.query.field(key);
         }
       });
     }
