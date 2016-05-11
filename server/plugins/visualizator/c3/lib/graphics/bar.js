@@ -38,12 +38,12 @@ function prepareAxis(raw, graphData, data, types) {
         format: '%H:%M'
       };
       ((xData) ? axis.x = xData : console.log("No X axis to push"));
-    } else {//} if (types(raw.graph.x.field.type) === 'varchar') {
+    } else {//if (types(raw.graph.x.field.type) === 'varchar') {
       var xData = {};
       xData.type = 'category';
       xData.categories = _.map(data, raw.graph.x.field.name);
       ((xData) ? axis.x = xData : console.log("No X axis to push"));
-    } // else {
+    } //else {
     //   graphData.x = raw.graph.x.field.name;
     // }
 
@@ -131,7 +131,7 @@ BarC3.prototype.dataset = function() {
     if (this.raw.graph.x || this.raw.graph.y){
       this.graph.axis = prepareAxis(this.raw, this.graph.data, this.data, this.types);
 
-      if (this.raw.groups.length > 1 ) {
+      if (this.raw.groups.length > 1 && this.types(this.raw.graph.x.field.type) !== 'timestamp') {
         this.graph.axis.x.type = "categories";
         this.graph.axis.x.categories = this.graph.data.columns[0].slice(1);
       }
