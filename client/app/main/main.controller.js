@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('thedashboardApp')
-  .controller('MainCtrl', function ($scope, $http, socket) {
+  .controller('MainCtrl', function ($scope, $http, socket, $state) {
     $scope.gridsterOpts = {
       columns: 12, // the width of the grid, in columns
       pushing: true, // whether to push other items out of the way on move or resize
@@ -245,4 +245,5 @@ angular.module('thedashboardApp')
     // $scope.$on('$destroy', function () {
     //   socket.unsyncUpdates('thing');
     // });
+    $state.go('main.dashboard.open({id: "57336795dd7f8d016f2d796b"})');
   });
