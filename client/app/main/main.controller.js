@@ -245,5 +245,5 @@ angular.module('thedashboardApp')
     // $scope.$on('$destroy', function () {
     //   socket.unsyncUpdates('thing');
     // });
-    $state.go('main.dashboard.open');
+    $state.go('main.dashboard.open', {id: "57336795dd7f8d016f2d796b"});
   });
